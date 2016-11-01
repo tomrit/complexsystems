@@ -31,14 +31,19 @@ speed = np.sqrt(dx * dx + dy * dy)
 
 fig1 = plt.quiver(x, y, dx, dy)
 
-fig = plt.figure(figsize=(13, 10))
-plt.title('Extended Lotka-Volterra model')
-plt.xlabel('Prey population')
-plt.ylabel('Predator population')
-plt.streamplot(x, y, dx, dy, density=2)
-# linewidth=5*speed/speed.max()
 
-pp = PdfPages("./test.pdf")
-plt.show()
-pp.savefig(fig)
-pp.close()
+def outputfigure():
+    fig = plt.figure(figsize=(13, 10))
+    plt.title('Extended Lotka-Volterra model')
+    plt.xlabel('Prey population')
+    plt.ylabel('Predator population')
+    plt.streamplot(x, y, dx, dy, density=2)
+    # linewidth=5*speed/speed.max()
+
+    pp = PdfPages("./test.pdf")
+    plt.show()
+    pp.savefig(fig)
+    pp.close()
+
+
+outputfigure()
