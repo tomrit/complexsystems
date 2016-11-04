@@ -156,3 +156,4 @@ parameter_arr = [stableNode, stableSpiral, degenerateNode]
 for parameter in parameter_arr:
     create_plots(parameter, True, True)
     # create_plots(parameter, True, True)
+    # test
