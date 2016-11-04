@@ -40,7 +40,7 @@ class Parameters(object):
         return r'{}: a = {}, b = {}, c = {}, d = {}'.format(self.description, self.a, self.b, self.c, self.d)
 
     def __repr__(self, *args, **kwargs):
-        return "Parameters(a = {}, a = {}, a = {}, a = {}, FP = ({}, {}), dis = {:.2f})" \
+        return "Parameters(a = {}, b = {}, c = {}, d = {}, FP = ({}, {}), dis = {:.2f})" \
             .format(self.a, self.b, self.c, self.d, self.get_xf(), self.get_yf(), self.get_dis())
 
 
@@ -89,7 +89,7 @@ def create_plots(parameters, show_plots=False, save_plots=False):
 
     x, y, dx, dy = mesh_params_zoom.create_mesh(parameters)
 
-    plt.rc('text', usetex=True)
+    plt.rc('text')
     plt.rc('font', family='serif')
 
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharey='row', figsize=(15, 10))
@@ -147,11 +147,11 @@ def create_plots(parameters, show_plots=False, save_plots=False):
         plt.show()
 
 
-stableSpiral = Parameters(2., 15., 2., 20, "stable-spiral")
-stableNode = Parameters(20, 3, 20, 4, "stable-node")
-degenerateNode = Parameters(16, 2, 16, 4, "degenerate-node")
+stableSpiral = Parameters(2., 15., 2., 20., "stable-spiral")
+stableNode = Parameters(20., 3., 20., 4., "stable-node")
+degenerateNode = Parameters(16., 2., 16., 4., "degenerate-node")
 
 parameter_arr = [stableNode, stableSpiral, degenerateNode]
 for parameter in parameter_arr:
-    create_plots(parameter, True, False)
+    create_plots(parameter, True, True)
     # create_plots(parameter, True, True)
