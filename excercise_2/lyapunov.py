@@ -8,6 +8,7 @@ import numpy as np
 from scipy.integrate import ode
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class dgl(object):
