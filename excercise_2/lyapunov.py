@@ -28,12 +28,10 @@ class dgl(object):
     def solve(self, tmax):
         return self.dgl.integrate(tmax)
 
-
 def f(t, y):
     dx = -2 * y[0] - y[1] ** 2
     dy = -y[1] - y[0] ** 2
     return [dx, dy]
-
 
 def add_arrow(line, position=None, direction='right', size=15, color=None):
     """
@@ -70,11 +68,42 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
 
 initial = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0.5, 0.2], [-1, -1], [1, -1]]
 
-for ini in initial:
-    cur = dgl(f, ini)
-    cur.solve(10)
-    line, = plt.plot(cur.xt, cur.yt)
-    add_arrow(line, None, 'right', 15, line.get_color())
-
+fig_plane = plt.figure(1)
+ax1 = fig_plane.add_subplot(111)
 plt.grid()
+i = 0
+cur = []
+
+
+def lyapunov(x, y):
+    return 0.5 * (x ** 2 + y ** 2)
+
+
+xlim = (-.5, .5)
+ylim = (-1, 1)
+
+fig_3d = plt.figure(2)
+ax2 = fig_3d.gca(projection='3d')
+ax2.view_init(35, -28)
+ax2.set_xlim(xlim)
+ax2.set_ylim(ylim)
+
+x, y = np.meshgrid(np.linspace(xlim[0], xlim[1], 30), np.linspace(ylim[0], ylim[1], 30))
+surf = ax2.plot_surface(x, y, lyapunov(x, y), rstride=1, cstride=1, alpha=.5)
+
+for ini in initial:
+    cur.append(dgl(f, ini))
+    cur[i].solve(10)
+    line, = ax1.plot(cur[i].xt, cur[i].yt)
+    x_ar = np.array(cur[i].xt)
+    y_ar = np.array(cur[i].yt)
+    print cur[i].xt
+    ax2.plot(cur[i].xt, cur[i].yt, lyapunov(x_ar, y_ar))
+
+    add_arrow(line, None, 'right', 15, line.get_color())
+    i = i + 1
+
+ax2.set_xlabel("x")
+ax2.set_ylabel("y")
+ax2.legend()
 plt.show()
