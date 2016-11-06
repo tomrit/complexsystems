@@ -69,18 +69,16 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
 
 initial = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0.5, 0.2], [-1, -1], [1, -1]]
 
+
 fig_plane = plt.figure(1)
 ax1 = fig_plane.add_subplot(111)
 plt.grid()
-i = 0
-cur = []
-
 
 def lyapunov(x, y):
     return 0.5 * (x ** 2 + y ** 2)
 
 
-xlim = (-.5, .5)
+xlim = (-1, 1)
 ylim = (-1, 1)
 
 fig_3d = plt.figure(2)
@@ -93,16 +91,13 @@ x, y = np.meshgrid(np.linspace(xlim[0], xlim[1], 30), np.linspace(ylim[0], ylim[
 surf = ax2.plot_surface(x, y, lyapunov(x, y), rstride=1, cstride=1, alpha=.5)
 
 for ini in initial:
-    cur.append(dgl(f, ini))
-    cur[i].solve(10)
-    line, = ax1.plot(cur[i].xt, cur[i].yt)
-    x_ar = np.array(cur[i].xt)
-    y_ar = np.array(cur[i].yt)
-    print cur[i].xt
-    ax2.plot(cur[i].xt, cur[i].yt, lyapunov(x_ar, y_ar))
-
+    cur = (dgl(f, ini))
+    cur.solve(10)
+    line, = ax1.plot(cur.xt, cur.yt)
+    x_ar = np.array(cur.xt)
+    y_ar = np.array(cur.yt)
+    ax2.plot(cur.xt, cur.yt, lyapunov(x_ar, y_ar))
     add_arrow(line, None, 'right', 15, line.get_color())
-    i = i + 1
 
 ax2.set_xlabel("x")
 ax2.set_ylabel("y")
