@@ -1,9 +1,10 @@
 #! /usr/bin/env python
 
 # Exercises set 3:
-
+import errno
 import numpy as np
 import time as time
+import os
 from scipy.integrate import ode
 
 import matplotlib.pyplot as plt
@@ -112,6 +113,20 @@ for initial_point in initial_coordinates:
 fig_size_inch = 13
 fig_plane.set_size_inches(fig_size_inch, fig_size_inch)
 fig_plane.set_dpi(fig_pixels / fig_size_inch)
-fig_plane.savefig('basin.svg')
+
+filename_figure = os.path.join('graphics', 'basin.svg')
+
+if not os.path.exists(os.path.dirname(filename_figure)):
+    try:
+        os.makedirs(os.path.dirname(filename_figure))
+    except OSError as exc: # Guard against race condition
+        if exc.errno != errno.EEXIST:
+            raise
+
+# Edit: In Python 3.2+, there is a more elegant way that avoids the race condition above:
+# os.makedirs(os.path.dirname(filename_figure), exist_ok=True)
+
+fig_plane.savefig(filename_figure)
+
 print("Calculation took: \t {:.2f}s".format(time.time() - start_time))
 plt.show()
