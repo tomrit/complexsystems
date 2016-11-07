@@ -69,7 +69,7 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
                        )
 
 
-starttime = time.time()
+start_time = time.time()
 
 y_min = -4.
 y_max = 4.
@@ -80,8 +80,8 @@ x_resolution = 0.05
 
 samples = (x_max - x_min) / x_resolution
 
-initial = [(x, y) for x in np.arange(x_min, x_max + x_resolution, x_resolution) for y in
-           np.arange(y_min, y_max + y_resolution, y_resolution)]
+initial_coordinates = [(x, y) for x in np.arange(x_min, x_max + x_resolution, x_resolution) for y in
+                       np.arange(y_min, y_max + y_resolution, y_resolution)]
 
 fig_plane = plt.figure(1)
 fig_pixels = 1024
@@ -92,16 +92,16 @@ plt.grid()
 
 gamma = 1
 
-for ini in initial:
-    cur = (dgl(f_duff, ini, gamma))
+for initial_point in initial_coordinates:
+    cur = (dgl(f_duff, initial_point, gamma))
     endv = [2, 3]
-    print ini
-    while abs(endv[1]) > 0.5 or (abs(1 - abs(endv[0])) > 0.5 and ini != (0, 0)):
+    print initial_point
+    while abs(endv[1]) > 0.5 or (abs(1 - abs(endv[0])) > 0.5 and initial_point != (0, 0)):
         endv = cur.solve(cur.dgl.t + 0.5)
         # print endv
 
     # line, = ax1.plot(cur.xt, cur.yt)
-    pt = ax1.plot(ini[0], ini[1])
+    pt = ax1.plot(initial_point[0], initial_point[1])
     colors = ['r', 'b']
     fix = int(np.sign(endv[0]) + 1) / 2
     # print fix
@@ -114,5 +114,5 @@ insize = 12
 fig_plane.set_size_inches(insize, insize)
 fig_plane.set_dpi(fig_pixels / insize)
 fig_plane.savefig('basin.svg')
-print("Calculation took: \t {:.2f}s".format(time.time() - starttime))
+print("Calculation took: \t {:.2f}s".format(time.time() - start_time))
 plt.show()
