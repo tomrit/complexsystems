@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 
 
 class Dgl(object):
-    def __init__(self, funct, r0, gamma):
-        self.funct = funct
+    def __init__(self, function, r0, gamma):
+        self.function = function
         self.r0 = r0
         self.t0 = 0
         self.xt = []
         self.yt = []
-        self.dgl = ode(self.funct).set_integrator('dopri5')
+        self.dgl = ode(self.function).set_integrator('dopri5')
         self.dgl.set_f_params(gamma)
         # self.dgl.set_solout(self.solout)
         self.dgl.set_initial_value(self.r0, self.t0)
@@ -94,16 +94,16 @@ gamma = 1
 
 for initial_point in initial_coordinates:
     cur = (Dgl(f_duff, initial_point, gamma))
-    endv = [2, 3]
+    coordinate = [2, 3]
     print initial_point
-    while abs(endv[1]) > 0.5 or (abs(1 - abs(endv[0])) > 0.5 and initial_point != (0, 0)):
-        endv = cur.solve(cur.dgl.t + 0.5)
+    while abs(coordinate[1]) > 0.5 or (abs(1 - abs(coordinate[0])) > 0.5 and initial_point != (0, 0)):
+        coordinate = cur.solve(cur.dgl.t + 0.5)
         # print endv
 
     # line, = ax1.plot(cur.xt, cur.yt)
     pt = ax1.plot(initial_point[0], initial_point[1])
     colors = ['r', 'b']
-    fix = int(np.sign(endv[0]) + 1) / 2
+    fix = int(np.sign(coordinate[0]) + 1) / 2
     # print fix
     plt.setp(pt, marker='.', color=colors[fix], linewidth=2.0, markersize=2 * markersize)
     # x_ar = np.array(cur.xt)
