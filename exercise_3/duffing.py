@@ -110,7 +110,7 @@ for ini in initial:
     # y_ar = np.array(cur.yt)
     # add_arrow(line, None, 'right', 15, line.get_color())
 
-insize = 12
+insize = 13
 fig_plane.set_size_inches(insize, insize)
 fig_plane.set_dpi(fig_pixels / insize)
 fig_plane.savefig('basin.svg')
