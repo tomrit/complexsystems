@@ -2,7 +2,6 @@
 
 # Exercises set 3:
 
-import copy
 import numpy as np
 import time as time
 from scipy.integrate import ode
@@ -26,8 +25,8 @@ class Dgl(object):
         #   self.xt.append(copy.deepcopy(r[0]))
         #  self.yt.append(copy.deepcopy(r[1]))
 
-    def solve(self, tmax):
-        return self.dgl.integrate(tmax)
+    def solve(self, t_max):
+        return self.dgl.integrate(t_max)
 
 
 def f_duff(t, y, gamma):                    # Is t needed here?
@@ -85,8 +84,8 @@ initial_coordinates = [(x, y) for x in np.arange(x_min, x_max + x_resolution, x_
 
 fig_plane = plt.figure(1)
 fig_pixels = 1024
-markersize = fig_pixels / samples
-print markersize
+marker_size = fig_pixels / samples
+print marker_size
 ax1 = fig_plane.add_subplot(111)
 plt.grid()
 
@@ -105,14 +104,14 @@ for initial_point in initial_coordinates:
     colors = ['r', 'b']
     fix = int(np.sign(coordinate[0]) + 1) / 2
     # print fix
-    plt.setp(pt, marker='.', color=colors[fix], linewidth=2.0, markersize=2 * markersize)
+    plt.setp(pt, marker='.', color=colors[fix], linewidth=2.0, markersize=2 * marker_size)
     # x_ar = np.array(cur.xt)
     # y_ar = np.array(cur.yt)
     # add_arrow(line, None, 'right', 15, line.get_color())
 
-insize = 13
-fig_plane.set_size_inches(insize, insize)
-fig_plane.set_dpi(fig_pixels / insize)
+fig_size_inch = 13
+fig_plane.set_size_inches(fig_size_inch, fig_size_inch)
+fig_plane.set_dpi(fig_pixels / fig_size_inch)
 fig_plane.savefig('basin.svg')
 print("Calculation took: \t {:.2f}s".format(time.time() - start_time))
 plt.show()
