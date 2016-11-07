@@ -10,7 +10,7 @@ from scipy.integrate import ode
 import matplotlib.pyplot as plt
 
 
-class dgl(object):
+class Dgl(object):
     def __init__(self, funct, r0, gamma):
         self.funct = funct
         self.r0 = r0
@@ -93,7 +93,7 @@ plt.grid()
 gamma = 1
 
 for initial_point in initial_coordinates:
-    cur = (dgl(f_duff, initial_point, gamma))
+    cur = (Dgl(f_duff, initial_point, gamma))
     endv = [2, 3]
     print initial_point
     while abs(endv[1]) > 0.5 or (abs(1 - abs(endv[0])) > 0.5 and initial_point != (0, 0)):
