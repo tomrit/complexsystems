@@ -1,38 +1,40 @@
 #! /usr/bin/env python
 
-# This program shall solve a Differential equation numerically and plot trajectories
-# together with a 'potential' obtained as a Lyapunov function.
+# Exercises set 3:
 
 import copy
 import numpy as np
+import time as time
 from scipy.integrate import ode
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 
 class dgl(object):
-    def __init__(self, funct, r0):
+    def __init__(self, funct, r0, gamma):
         self.funct = funct
         self.r0 = r0
         self.t0 = 0
         self.xt = []
         self.yt = []
         self.dgl = ode(self.funct).set_integrator('dopri5')
-        self.dgl.set_solout(self.solout)
+        self.dgl.set_f_params(gamma)
+        # self.dgl.set_solout(self.solout)
         self.dgl.set_initial_value(self.r0, self.t0)
 
-    def solout(self, t, r):
-        self.xt.append(copy.deepcopy(r[0]))
-        self.yt.append(copy.deepcopy(r[1]))
+        # def solout(self, t, r):
+        #   self.xt.append(copy.deepcopy(r[0]))
+        #  self.yt.append(copy.deepcopy(r[1]))
 
     def solve(self, tmax):
         return self.dgl.integrate(tmax)
 
-def f(t, y):
-    dx = -2 * y[0] - y[1] ** 2
-    dy = -y[1] - y[0] ** 2
+
+def f_duff(t, y, gamma):
+    dx = y[1]
+    dy = - gamma * y[1] + y[0] - y[0] ** 3
     return [dx, dy]
+
 
 def add_arrow(line, position=None, direction='right', size=15, color=None):
     """
@@ -67,39 +69,50 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
                        )
 
 
-initial = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0.5, 0.2], [-1, -1], [1, -1]]
+starttime = time.time()
 
+y_min = -4.
+y_max = 4.
+y_resolution = 0.05
+x_min = -4.
+x_max = 4.
+x_resolution = 0.05
+
+samples = (x_max - x_min) / x_resolution
+
+initial = [(x, y) for x in np.arange(x_min, x_max + x_resolution, x_resolution) for y in
+           np.arange(y_min, y_max + y_resolution, y_resolution)]
 
 fig_plane = plt.figure(1)
+fig_pixels = 1024
+markersize = fig_pixels / samples
+print markersize
 ax1 = fig_plane.add_subplot(111)
 plt.grid()
 
-def lyapunov(x, y):
-    return 0.5 * (x ** 2 + y ** 2)
-
-
-xlim = (-1, 1)
-ylim = (-1, 1)
-
-fig_3d = plt.figure(2)
-ax2 = fig_3d.gca(projection='3d')
-ax2.view_init(35, -28)
-ax2.set_xlim(xlim)
-ax2.set_ylim(ylim)
-
-x, y = np.meshgrid(np.linspace(xlim[0], xlim[1], 30), np.linspace(ylim[0], ylim[1], 30))
-surf = ax2.plot_surface(x, y, lyapunov(x, y), rstride=1, cstride=1, alpha=.5)
+gamma = 1
 
 for ini in initial:
-    cur = (dgl(f, ini))
-    cur.solve(10)
-    line, = ax1.plot(cur.xt, cur.yt)
-    x_ar = np.array(cur.xt)
-    y_ar = np.array(cur.yt)
-    ax2.plot(cur.xt, cur.yt, lyapunov(x_ar, y_ar))
-    add_arrow(line, None, 'right', 15, line.get_color())
+    cur = (dgl(f_duff, ini, gamma))
+    endv = [2, 3]
+    print ini
+    while abs(endv[1]) > 0.5 or (abs(1 - abs(endv[0])) > 0.5 and ini != (0, 0)):
+        endv = cur.solve(cur.dgl.t + 0.5)
+        # print endv
 
-ax2.set_xlabel("x")
-ax2.set_ylabel("y")
-ax2.legend()
+    # line, = ax1.plot(cur.xt, cur.yt)
+    pt = ax1.plot(ini[0], ini[1])
+    colors = ['r', 'b']
+    fix = int(np.sign(endv[0]) + 1) / 2
+    # print fix
+    plt.setp(pt, marker='.', color=colors[fix], linewidth=2.0, markersize=2 * markersize)
+    # x_ar = np.array(cur.xt)
+    # y_ar = np.array(cur.yt)
+    # add_arrow(line, None, 'right', 15, line.get_color())
+
+insize = 12
+fig_plane.set_size_inches(insize, insize)
+fig_plane.set_dpi(fig_pixels / insize)
+fig_plane.savefig('basin.svg')
+print("Calculation took: \t {:.2f}s".format(time.time() - starttime))
 plt.show()
