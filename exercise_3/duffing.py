@@ -30,7 +30,7 @@ class Dgl(object):
         return self.dgl.integrate(t_max)
 
 
-def f_duff(t, y, gamma):                    # Is t needed here?
+def f_duff(t, y, gamma):  # Is t needed here?
     dx = y[1]
     dy = - gamma * y[1] + y[0] - y[0] ** 3
     return [dx, dy]
