@@ -86,7 +86,7 @@ initial_coordinates = [(x, y) for x in np.arange(x_min, x_max + x_resolution, x_
 fig_plane = plt.figure(1)
 fig_pixels = 1024
 marker_size = fig_pixels / samples
-print marker_size
+print(marker_size)
 ax1 = fig_plane.add_subplot(111)
 plt.grid()
 
@@ -95,7 +95,7 @@ gamma = 1
 for initial_point in initial_coordinates:
     cur = (Dgl(f_duff, initial_point, gamma))
     coordinate = [2, 3]
-    print initial_point
+    print(initial_point)
     while abs(coordinate[1]) > 0.5 or (abs(1 - abs(coordinate[0])) > 0.5 and initial_point != (0, 0)):
         coordinate = cur.solve(cur.dgl.t + 0.5)
         # print endv
