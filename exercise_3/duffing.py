@@ -22,9 +22,9 @@ class Dgl(object):
         # self.dgl.set_solout(self.solout)
         self.dgl.set_initial_value(self.r0, self.t0)
 
-        # def solout(self, t, r):
-        #   self.xt.append(copy.deepcopy(r[0]))
-        #  self.yt.append(copy.deepcopy(r[1]))
+    def solout(self, t, r):
+        self.xt.append(np.copy.deepcopy(r[0]))
+        self.yt.append(np.copy.deepcopy(r[1]))
 
     def solve(self, t_max):
         return self.dgl.integrate(t_max)
