@@ -136,7 +136,7 @@ filename_figure = os.path.join('graphics', 'basin.svg')
 if not os.path.exists(os.path.dirname(filename_figure)):
     try:
         os.makedirs(os.path.dirname(filename_figure))
-    except OSError as exc: # Guard against race condition
+    except OSError as exc:  # Guard against race condition
         if exc.errno != errno.EEXIST:
             raise
 
