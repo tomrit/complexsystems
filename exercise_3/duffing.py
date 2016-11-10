@@ -107,22 +107,24 @@ print(marker_size)
 ax1 = fig_plane.add_subplot(111)
 plt.grid()
 
+fixed_points = {(-1, 0): 'r', (1, 0): 'b'}
+
 gamma = 1
 
-for initial_point in initial_coordinates:
+
+for idx, initial_point in enumerate(initial_coordinates):
+
     cur = (Dgl(f_duff, initial_point, gamma))
     coordinate = [2, 3]
-    print(initial_point)
+    # print(initial_point)
     while abs(coordinate[1]) > 0.5 or (abs(1 - abs(coordinate[0])) > 0.5 and initial_point != (0, 0)):
         coordinate = cur.solve(cur.dgl.t + 0.5)
         # print endv
 
     # line, = ax1.plot(cur.xt, cur.yt)
     pt = ax1.plot(initial_point[0], initial_point[1])
-    colors = ['r', 'b']
-    fix = int(np.sign(coordinate[0]) + 1) / 2
-    # print fix
-    plt.setp(pt, marker='.', color=colors[fix], linewidth=2.0, markersize=2 * marker_size)
+
+    plt.setp(pt, marker='.', color=get_color(coordinate, fixed_points), linewidth=2.0, markersize=2 * marker_size)
     # x_ar = np.array(cur.xt)
     # y_ar = np.array(cur.yt)
     # add_arrow(line, None, 'right', 15, line.get_color())
