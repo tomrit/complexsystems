@@ -69,6 +69,23 @@ def add_arrow(line, position=None, direction='right', size=15, color=None):
                        )
 
 
+def find_nearest(array, value):
+    idx = np.linalg.norm(array - value, axis=1).argmin()
+    return array[idx]
+
+
+def get_color(coordinate, color_dictionary):
+    """
+
+    :param coordinate: [x,y]
+    :param color_dictionary: {fix_point (tuple): color_code}
+    :return: color_code
+    """
+    fix_points = np.array(list(color_dictionary.keys()))
+    coordinate_nearest = find_nearest(fix_points, coordinate)
+    return color_dictionary[tuple(coordinate_nearest)]
+
+
 start_time = time.time()
 
 y_min = -4.
