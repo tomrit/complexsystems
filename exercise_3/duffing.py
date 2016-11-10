@@ -86,19 +86,36 @@ def get_color(coordinate, color_dictionary):
     return color_dictionary[tuple(coordinate_nearest)]
 
 
+def get_number(coordinate, number_dictionary):
+    """
+
+    :param coordinate: [x,y]
+    :param number_dictionary: {fix_point (tuple): number}
+    :return: number
+    """
+    fix_points = np.array(list(number_dictionary.keys()))
+    coordinate_nearest = find_nearest(fix_points, coordinate)
+    return number_dictionary[tuple(coordinate_nearest)]
+
+
 start_time = time.time()
 
 y_min = -4.
 y_max = 4.
-y_resolution = 0.05
+y_resolution = 0.1
+N_y = int((y_max - y_min) / y_resolution)
 x_min = -4.
 x_max = 4.
-x_resolution = 0.05
+x_resolution = 0.1
+N_x = int((x_max - x_min) / x_resolution)
 
 samples = (x_max - x_min) / x_resolution
 
-initial_coordinates = [(x, y) for x in np.arange(x_min, x_max + x_resolution, x_resolution) for y in
-                       np.arange(y_min, y_max + y_resolution, y_resolution)]
+x_range = np.linspace(x_min, x_max, N_x)
+y_range = np.linspace(y_min, y_max, N_y)
+initial_coordinates = [(x, y) for x in x_range for y in y_range]
+
+results = np.zeros([N_x, N_y])
 
 fig_plane = plt.figure(1)
 fig_pixels = 1024
