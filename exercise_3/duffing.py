@@ -10,7 +10,7 @@ import sys
 import copy
 
 import matplotlib.pyplot as plt
-
+from matplotlib.backends.backend_pdf import PdfPages
 
 class Dgl(object):
     def __init__(self, function, r0, gamma, trace=False):
@@ -49,7 +49,8 @@ class MeshSize(object):
         return self.x_min <= x <= self.x_max and self.y_min <= y <= y_max
 
 
-def f_duff(t, y, gamma):  # Is t needed here?
+def f_duff(t, y,
+           gamma):  # Is t needed here?  ## Yes it is. If it had just two arguments, dgl.ode would think of y as time and gamma as location
     dx = y[1]
     dy = - gamma * y[1] + y[0] - y[0] ** 3
     return [dx, dy]
@@ -117,7 +118,7 @@ def get_number(coordinate, number_dictionary):
     return number_dictionary[tuple(coordinate_nearest)]
 
 
-def get_basins(mesh_size):
+def get_basins(mesh_size, end_treshold, gamma):
     start_time = time.time()
 
     y_min = mesh_size.y_min
@@ -132,16 +133,7 @@ def get_basins(mesh_size):
 
     results = np.zeros([N_x, N_y])
 
-    # fig_plane = plt.figure(1)
-    # fig_pixels = 1024
-    # marker_size = fig_pixels / mesh_size.sample
-    # ax1 = fig_plane.add_subplot(111)
-    # plt.grid()
-
-    fixed_points_color = {(-1, 0): 'r', (1, 0): 'b'}
     fixed_points_number = {(-1, 0): 1, (1, 0): 2}
-
-    gamma = 1
 
     toolbar_width = np.size(x_range)
     sys.stdout.write("Basin\n [%s]\n" % (" " * toolbar_width))
@@ -150,21 +142,15 @@ def get_basins(mesh_size):
     for idx, x in enumerate(x_range):
         for idy, y in enumerate(y_range):
             initial_point = (x, y)
-
             cur = (Dgl(f_duff, initial_point, gamma))
             coordinate = [2, 3]
-            while abs(coordinate[1]) > 0.5 or (abs(1 - abs(coordinate[0])) > 0.5 and initial_point != (0, 0)):
+
+            while (abs(coordinate[1]) > end_treshold or abs(
+                        1 - abs(coordinate[0]))) > end_treshold and initial_point != (0, 0):
                 coordinate = cur.solve(cur.dgl.t + 0.5)
 
             results[idx, idy] = get_number(coordinate, fixed_points_number)
-            # line, = ax1.plot(cur.xt, cur.yt)
-            # pt = ax1.plot(initial_point[0], initial_point[1])
 
-            # plt.setp(pt, marker='.', color=get_color(coordinate, fixed_points_color), linewidth=2.0,
-            #          markersize=2 * marker_size)
-            # x_ar = np.array(cur.xt)
-            # y_ar = np.array(cur.yt)
-            # add_arrow(line, None, 'right', 15, line.get_color())
         # Progressbar
         sys.stdout.write("-")
         sys.stdout.flush()
@@ -173,8 +159,7 @@ def get_basins(mesh_size):
     return results
 
 
-def get_manifold(mesh_size, N):
-    gamma = 1
+def get_manifold(mesh_size, N, gamma):
     saddle = [0, 0]
     epsilon = 0.01
     x_range = np.linspace(saddle[0] - epsilon, saddle[0] + epsilon, N)
@@ -195,45 +180,52 @@ def get_manifold(mesh_size, N):
 
     return xt_array, yt_array
 
-y_min = -10.
-y_max = 10.
-x_min = -5.
-x_max = 5.
 
-N = 64
-mesh_size = MeshSize(x_min, x_max, y_min, y_max, N)
+y_min = -20.
+y_max = 20.
+x_min = -10.
+x_max = 10.
 
-xt_array, yt_array = get_manifold(mesh_size, 3)
+N = 120
 
-results = get_basins(mesh_size)
+gamma_list = [0.5, 0.75, 1, 1.5, 2, 3, 5]
+pp = PdfPages("basins_overview.pdf")
 
-filename_figure = os.path.join('graphics', 'basin.svg')
+for i_gamma, gamma in enumerate(gamma_list):
 
-fig_plane2 = plt.figure(2)
-fig_size_inch = 13
-fig_pixels = 1024
-fig_plane2.set_size_inches(fig_size_inch, fig_size_inch)
-fig_plane2.set_dpi(fig_pixels / fig_size_inch)
+    mesh_size = MeshSize(x_min, x_max, y_min, y_max, N)
 
-ax2 = fig_plane2.add_subplot(111)
+    xt_array, yt_array = get_manifold(mesh_size, 5, gamma)
 
-ax2.imshow(results.T, extent=[x_min, x_max, y_min, y_max], interpolation='none')
+    results = get_basins(mesh_size, 0.1, gamma)
 
-for idx, xt in enumerate(xt_array):
-    ax2.plot(np.array(xt) * (-1), np.array(yt_array[idx]) * (-1))
-ax2.set_xlim(mesh_size.x_min, mesh_size.x_max)
-ax2.set_ylim(mesh_size.y_min, mesh_size.y_max)
+    fig_plane2 = plt.figure(i_gamma)
+    fig_size_inch = 5.
+    fig_pixels = 1600.
+    fig_ratio = (y_max - y_min) / (x_max - x_min)
+    fig_plane2.set_size_inches(fig_size_inch, fig_ratio * fig_size_inch)
+    fig_plane2.set_dpi(fig_pixels / fig_size_inch)
 
-if not os.path.exists(os.path.dirname(filename_figure)):
-    try:
-        os.makedirs(os.path.dirname(filename_figure))
-    except OSError as exc:  # Guard against race condition
-        if exc.errno != errno.EEXIST:
-            raise
+    ax2 = fig_plane2.add_subplot(111)
+    ax2.imshow(np.flipud(results.T), extent=[x_min, x_max, y_min, y_max], interpolation='none')
 
-# Edit: In Python 3.2+, there is a more elegant way that avoids the race condition above:
-# os.makedirs(os.path.dirname(filename_figure), exist_ok=True)
+    for idx, xt in enumerate(xt_array):
+        manifold_plot = ax2.plot(np.array(xt) * (-1), np.array(yt_array[idx]) * (-1))
+        plt.setp(manifold_plot, color='y', linewidth=1.5)
 
-# fig_plane.savefig(filename_figure)
+    ax2.set_xlim(mesh_size.x_min, mesh_size.x_max)
+    ax2.set_ylim(mesh_size.y_min, mesh_size.y_max)
+    ax2.set_xlabel(r'$x$')
+    ax2.set_ylabel(r'd$x$/d$t$')
+    ax2.set_title(r'for $\gamma= ${}'.format(gamma))
+    ax2.plot(-1, 0, 'o', color='#00BFFF')
+    ax2.plot(1, 0, 'or', )
+    ax2.plot(0, 0, 'o', color='#01DF01')
 
-plt.show()
+    pp_single = PdfPages("basins_gamma_{}.pdf".format(gamma))
+    pp_single.savefig(fig_plane2)
+    pp_single.close()
+    pp.savefig(fig_plane2)
+
+# plt.show()
+pp.close()
