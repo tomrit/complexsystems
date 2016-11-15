@@ -1,0 +1,16 @@
+from tools import Dgl
+
+
+def f_limit_cycle(t, y, a):
+    x1 = y[0]
+    x2 = y[1]
+    dx = x2
+    dy = - a * x2(x1 ** 2 + x2 ** 2 - 1) - x1
+    return [dx, dy]
+
+
+a = 1.
+
+x0 = (2, 2)
+dgl = (Dgl(f_limit_cycle, x0, a))
+dgl.solve(10)
