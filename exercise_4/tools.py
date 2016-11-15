@@ -1,0 +1,39 @@
+from scipy.integrate import ode
+import copy
+
+
+class Dgl(object):
+    def __init__(self, function, r0, f_params, trace=False):
+        self.function = function
+        self.r0 = r0
+        self.t0 = 0
+        self.xt = []
+        self.yt = []
+        self.dgl = ode(self.function).set_integrator('dopri5')
+        self.dgl.set_f_params(f_params)
+        if trace:
+            self.dgl.set_solout(self.solout)
+        self.dgl.set_initial_value(self.r0, self.t0)
+
+    def solout(self, t, r):
+        self.xt.append(copy.copy(r[0]))
+        self.yt.append(copy.copy(r[1]))
+
+    def solve(self, t_max):
+        return self.dgl.integrate(t_max)
+
+
+class MeshSize(object):
+    """
+    Mesh Parameters including its size and sample resolution
+    """
+
+    def __init__(self, x_min=0., x_max=1., y_min=0., y_max=1., sample=250):
+        self.x_min = x_min
+        self.x_max = x_max
+        self.y_min = y_min
+        self.y_max = y_max
+        self.sample = sample
+
+    def contains(self, x, y):
+        return self.x_min <= x <= self.x_max and self.y_min <= y <= self.y_max
