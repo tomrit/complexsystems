@@ -46,7 +46,7 @@ class MeshSize(object):
         self.sample = sample
 
     def contains(self, x, y):
-        return self.x_min <= x <= self.x_max and self.y_min <= y <= y_max
+        return self.x_min <= x <= self.x_max and self.y_min <= y <= self.y_max
 
 
 def f_duff(t, y,
