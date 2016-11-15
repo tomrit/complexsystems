@@ -50,7 +50,7 @@ class MeshSize(object):
 
 
 def f_duff(t, y,
-           gamma):  # Is t needed here?  ## Yes it is. If it had just two arguments, dgl.ode would think of y as time and gamma as location
+           gamma):  # t is needed here: If it had just two arguments, dgl.ode would think of y as time and gamma as location
     dx = y[1]
     dy = - gamma * y[1] + y[0] - y[0] ** 3
     return [dx, dy]
