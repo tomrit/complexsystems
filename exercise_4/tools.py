@@ -43,7 +43,7 @@ class Mesh(object):
         return "Mesh(xMin = {}, xMax = {},yMin = {}, yMax = {}, sample = {})" \
             .format(self.x_min, self.x_max, self.y_min, self.y_max, self.sample)
 
-    def create_phase_space(self, function):
+    def create_phase_space(self, function, function_params):
         """
         Create a mesh from differential equation function on current Mesh
         :param function: Calculate dx, dy from x, y - [dx, dy] = function(x,y)
@@ -52,5 +52,5 @@ class Mesh(object):
         """
         x, y = np.meshgrid(np.linspace(self.x_min, self.x_max, self.sample),
                            np.linspace(self.y_min, self.y_max, self.sample))
-        [dx,dy] = function(x,y)
+        [dx, dy] = function(x, y, function_params)
         return x, y, dx, dy
