@@ -60,3 +60,8 @@ def get_subplots_squared(length):
     rows = np.floor(np.sqrt(length))
     columns = np.ceil(length / rows)
     return int(rows), int(columns)
+
+
+def get_a4_width():
+    a4_width = 448.13095 / 72.27
+    return a4_width
