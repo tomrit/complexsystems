@@ -54,3 +54,9 @@ class Mesh(object):
                            np.linspace(self.y_min, self.y_max, self.sample))
         [dx, dy] = function(x, y, function_params)
         return x, y, dx, dy
+
+
+def get_subplots_squared(length):
+    rows = np.floor(np.sqrt(length))
+    columns = np.ceil(length / rows)
+    return int(rows), int(columns)
