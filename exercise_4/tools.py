@@ -24,7 +24,7 @@ class Dgl(object):
         return self.dgl.integrate(t_max)
 
 
-class MeshSize(object):
+class Mesh(object):
     """
     Mesh Parameters including its size and sample resolution
     """
@@ -40,12 +40,12 @@ class MeshSize(object):
         return self.x_min <= x <= self.x_max and self.y_min <= y <= self.y_max
 
     def __repr__(self):
-        return "MeshParameters(xMin = {}, xMax = {},yMin = {}, yMax = {}, sample = {})" \
+        return "Mesh(xMin = {}, xMax = {},yMin = {}, yMax = {}, sample = {})" \
             .format(self.x_min, self.x_max, self.y_min, self.y_max, self.sample)
 
-    def create_mesh(self, function):
+    def create_phase_space(self, function):
         """
-        Create a mesh from differential equation function on current MeshSize
+        Create a mesh from differential equation function on current Mesh
         :param function: Calculate dx, dy from x, y - [dx, dy] = function(x,y)
         :return: x, y, dx, dy
 
