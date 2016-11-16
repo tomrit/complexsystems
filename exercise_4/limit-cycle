@@ -1,4 +1,6 @@
-from tools import Dgl, Mesh, get_subplots_squared
+from matplotlib.backends.backend_pdf import PdfPages
+
+from tools import Dgl, Mesh, get_subplots_squared, get_a4_width
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -15,43 +17,46 @@ def f_limit_cycle_xy(x_, y_, a_):
     return f_limit_cycle(t=None, y=[x_, y_], a=a_)
 
 
-# def get_subplots_squared(length):
-#     rows = np.floor(np.sqrt(length))
-#     columns = np.ceil(length / rows)
-#     return int(rows), int(columns)
-
-
 x_min = - 3
 x_max = - x_min
 y_min = x_min
 y_max = - y_min
-a = 1.
-a_range = np.linspace(0.9, 1.1, 16)
+# a = 1.
+# a_range = np.linspace(0.9, 1.1, 16)
 a_range = np.array([0, 0.5, 1.06, 3])
 
 mesh = Mesh(x_min, x_max, y_min, y_max)
-nrows, ncols = get_subplots_squared(a_range.size)
+n_rows, n_cols = get_subplots_squared(a_range.size)
 
-fig1, ax_array = plt.subplots(nrows, ncols, figsize=(15, 15))
+a4_width = get_a4_width()
+
+pp = PdfPages("exercise4_Limit-Cycle.pdf")
+fig1, ax_array = plt.subplots(n_rows, n_cols, figsize=(a4_width, a4_width))
 ax_array_flat = ax_array.reshape(-1)
 
 for idx, a in enumerate(a_range):
-    print("a = {:>4.2f} {:>2}/{}".format(a, idx, a_range.size))
+    print("a = {:>4.2f} {:>2}/{}".format(a + 1, idx, a_range.size))
     current_axis = ax_array_flat[idx]
     x, y, dx, dy = mesh.create_phase_space(f_limit_cycle_xy, a)
     current_axis.streamplot(x, y, dx, dy, density=2)
     current_axis.set_title("a = {:.1f}".format(a))
-    current_axis.set_xlim = (mesh.x_min, mesh.x_max)
-    current_axis.set_xlim = (-3, 3)
-    current_axis.set_ylim = (mesh.y_min, mesh.y_max)
+    current_axis.set_xlim(mesh.x_min, mesh.x_max)
+    current_axis.set_ylim(mesh.y_min, mesh.y_max)
 
-plt.show()
+pp.savefig(fig1, transparent=True, bbox_inches='tight')
 
-print(a_range)
+fig2, ax1 = plt.subplots(1, 1, figsize=(a4_width, a4_width))
 for a in a_range:
-    x0 = (5, .2)
+    x0 = (2, 2)
     dgl = (Dgl(f_limit_cycle, x0, a, True))
-    dgl.solve(100)
+    dgl.solve(50)
 
-    plt.plot(dgl.xt, dgl.yt)
+    ax1.plot(dgl.xt, dgl.yt, label="a = {:.1f}".format(a))
+
+    ax1.set_xlim(mesh.x_min, mesh.x_max)
+    ax1.set_ylim(mesh.y_min, mesh.y_max)
+    ax1.legend(loc="best")
+
+pp.savefig(fig2, transparent=True, bbox_inches='tight')
+pp.close()
 plt.show()
