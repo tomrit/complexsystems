@@ -1,4 +1,5 @@
 from scipy.integrate import ode
+import numpy as np
 import copy
 
 
@@ -37,3 +38,19 @@ class MeshSize(object):
 
     def contains(self, x, y):
         return self.x_min <= x <= self.x_max and self.y_min <= y <= self.y_max
+
+    def __repr__(self):
+        return "MeshParameters(xMin = {}, xMax = {},yMin = {}, yMax = {}, sample = {})" \
+            .format(self.x_min, self.x_max, self.y_min, self.y_max, self.sample)
+
+    def create_mesh(self, function):
+        """
+        Create a mesh from differential equation function on current MeshSize
+        :param function: Calculate dx, dy from x, y - [dx, dy] = function(x,y)
+        :return: x, y, dx, dy
+
+        """
+        x, y = np.meshgrid(np.linspace(self.x_min, self.x_max, self.sample),
+                           np.linspace(self.y_min, self.y_max, self.sample))
+        [dx,dy] = function(x,y)
+        return x, y, dx, dy
