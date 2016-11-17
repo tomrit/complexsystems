@@ -121,6 +121,7 @@ def get_number(coordinate, number_dictionary):
 def get_basins(mesh_size, end_treshold, gamma):
     start_time = time.time()
 
+    # Set mesh parameters
     y_min = mesh_size.y_min
     y_max = mesh_size.y_max
     N_y = mesh_size.sample
@@ -133,6 +134,7 @@ def get_basins(mesh_size, end_treshold, gamma):
 
     results = np.zeros([N_x, N_y])
 
+    # 
     fixed_points_number = {(-1, 0): 1, (1, 0): 2}
 
     toolbar_width = np.size(x_range)
@@ -189,6 +191,7 @@ x_max = 10.
 N = 120
 
 gamma_list = [0.5, 0.75, 1, 1.5, 2, 3, 5]
+gamma_list = [1, 2, 5]
 pp = PdfPages("basins_overview.pdf")
 
 for i_gamma, gamma in enumerate(gamma_list):
@@ -227,5 +230,5 @@ for i_gamma, gamma in enumerate(gamma_list):
     pp_single.close()
     pp.savefig(fig_plane2)
 
-# plt.show()
 pp.close()
+plt.show()
