@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from matplotlib.backends.backend_pdf import PdfPages
 
 from tools import Dgl, Mesh, get_subplots_squared, get_a4_width
