@@ -48,6 +48,8 @@ for idx, a in enumerate(a_range):
 pp.savefig(fig1, transparent=True, bbox_inches='tight')
 
 fig2, ax1 = plt.subplots(1, 1, figsize=(a4_width, a4_width))
+
+# Solving differential equations with Runge-Kutta - dopri5
 for a in a_range:
     x0 = (2, 2)
     dgl = (Dgl(f_limit_cycle, x0, a, True))
