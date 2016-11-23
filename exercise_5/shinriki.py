@@ -69,14 +69,18 @@ def plot():
 
     ax.scatter(rt[zero_crossings, 0], rt[zero_crossings, 1], rt[zero_crossings, 2], marker='.', color='r')
 
-    ax.set_xlabel('V_1 [V]')
-    ax.set_ylabel('V_2 [V]')
-    ax.set_zlabel('I_3 [A]')
+    ax.set_xlabel(r'$V_1$ [V]')
+    ax.set_ylabel(r'$V_2$ [V]')
+    ax.set_zlabel(r'$I_3$ [A]')
 
     fig3 = plt.figure()
     ax3 = fig3.add_subplot(111)
-    ax3.plot(-rt[zero_crossings, 0], -rt[zero_crossings, 2], '.')
-
+    scale_i = 1000  # plot in mA
+    ax3.plot(-rt[zero_crossings, 0], -rt[zero_crossings, 2] * scale_i, '.')
+    ax3.set_title(r'Poincare cross section ($V_2=0$)')
+    ax3.set_xlabel(r'$V_1$ [V]')
+    ax3.set_ylabel(r'$I_3$ [mA]')
+    ax3.grid()
     plt.show()
 
     def plot_colored():
@@ -106,4 +110,4 @@ def plot():
         ax.autoscale_view()
 
 
-# plot()
+plot()
