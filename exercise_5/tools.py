@@ -7,7 +7,7 @@ class Dgl(object):
     """
     Solve DGLs with dopri5 integrator
     """
-    def __init__(self, function, r0, trace=False):
+    def __init__(self, function, r0, parameter, trace=False):
         self.function = function
         self.r0 = r0
         self.t0 = 0
@@ -15,7 +15,7 @@ class Dgl(object):
         self.xt = []
         self.yt = []
         self.dgl = ode(self.function).set_integrator('dopri5')
-        # self.dgl.set_f_params(args)
+        self.dgl.set_f_params(parameter)
         if trace:
             self.dgl.set_solout(self.solout)
         self.dgl.set_initial_value(self.r0, self.t0)

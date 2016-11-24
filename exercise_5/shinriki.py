@@ -1,18 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d import axes3d
 import time as time
+import copy
 
-from tools import Dgl
+from tools import Dgl, get_a4_width
 
 
-def f_shinriki_dgl(t, r):
+def f_shinriki_dgl(t, r, r1=22e3):
     # parameters
     c1 = 10e-9
     c2 = 100e-9
     l = 0.32
-    r1 = 22e3
     r2 = 14.5e3
     r3 = 100
     r_nic = 6.9e3
@@ -41,9 +42,9 @@ def get_zero_crossings(array):
     return np.where(np.diff(np.sign(array)) == 2)[0]
 
 
-def run(r0, t_max, t_step=0.001):
+def run(r0, t_max, t_step=0.001, r1=22e3):
     start_time = time.time()
-    dgl = Dgl(f_shinriki_dgl, r0, trace=True)
+    dgl = Dgl(f_shinriki_dgl, r0, r1, trace=True)
     while dgl.dgl.t < t_max:
         dgl.solve(dgl.dgl.t + t_step)
     print("Running dgl solver took: \t {:.2f}s".format(time.time() - start_time))
@@ -57,30 +58,64 @@ def plot():
     dgl = run(r0, t_max, t_step)
     rt = np.array(dgl.rt)
 
+    a4_width = get_a4_width()
+
     # start at later point
     start_idx = 300
     rt = rt[start_idx:]
 
     zero_crossings = get_zero_crossings(rt[:, 1])
-    fig = plt.figure()
+
+    v1 = rt[zero_crossings, 0]
+
+    pp = PdfPages("shinriki.pdf")
+    fig = plt.figure(figsize=(a4_width, a4_width / 1.6))
     ax = fig.add_subplot(111, projection='3d')
-
     ax.plot(rt[start_idx:, 0], rt[start_idx:, 1], rt[start_idx:, 2])
-
     ax.scatter(rt[zero_crossings, 0], rt[zero_crossings, 1], rt[zero_crossings, 2], marker='.', color='r')
 
     ax.set_xlabel(r'$V_1$ [V]')
     ax.set_ylabel(r'$V_2$ [V]')
     ax.set_zlabel(r'$I_3$ [A]')
 
-    fig3 = plt.figure()
-    ax3 = fig3.add_subplot(111)
+    fig3, [ax3, ax4] = plt.subplots(2, 1, figsize=(a4_width, a4_width))
     scale_i = 1000  # plot in mA
     ax3.plot(-rt[zero_crossings, 0], -rt[zero_crossings, 2] * scale_i, '.')
     ax3.set_title(r'Poincare cross section ($V_2=0$)')
     ax3.set_xlabel(r'$V_1$ [V]')
     ax3.set_ylabel(r'$I_3$ [mA]')
-    ax3.grid()
+    # ax3.grid() # I don't like grid lines
+
+    ax4.plot(v1[1:], np.roll(v1, 1)[1:], '.')
+    ax4.set_xlabel(r'$V_1(n)$ [V]')
+    ax4.set_ylabel(r'$V_1(n+1)$ [V]')
+    pp.savefig(fig3, transparent=True, bbox_inches='tight')
+
+    pp.close()
+    plt.show()
+
+
+def parameter_swipe():
+    t_max = 0.5
+    t_step = 1e-5
+    r0 = [0, 0.5, 0.75e-3]
+    N = 5
+    r1s = np.linspace(19e3, 22e3, N)
+    v1s = []
+    rrls = []
+
+    for r1 in r1s:
+        dgl = run(r0, t_max, t_step, r1)
+        rt = np.array(dgl.rt)
+        start_idx = 300
+        rt = rt[start_idx:]
+
+        zero_crossings = get_zero_crossings(rt[:, 1])
+
+        v1 = rt[zero_crossings, 0]
+        v1s.append(copy.copy(v1))
+        rrls.append([copy.copy(r1)] * len(v1))
+    plt.plot(r1s, v1s, '.r')
     plt.show()
 
     def plot_colored():
@@ -111,3 +146,4 @@ def plot():
 
 
 plot()
+# parameter_swipe()
