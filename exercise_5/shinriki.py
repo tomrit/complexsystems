@@ -86,7 +86,7 @@ def plot():
     ax3.set_ylabel(r'$I_3$ [mA]')
     # ax3.grid() # I don't like grid lines
 
-    ax4.plot(v1[1:], np.roll(v1, 1)[1:], '.')
+    ax4.plot(-v1[:-1], -np.roll(v1, -1)[:-1], '.')
     ax4.set_xlabel(r'$V_1(n)$ [V]')
     ax4.set_ylabel(r'$V_1(n+1)$ [V]')
     pp.savefig(fig3, transparent=True, bbox_inches='tight')
