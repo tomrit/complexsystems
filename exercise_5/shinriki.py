@@ -107,7 +107,7 @@ def parameter_swipe():
     fig_bifurc = plt.figure()
     ax_bifurc = fig_bifurc.add_subplot(111)
     for r1 in r1s:
-        print r1
+        print(r1)
         dgl = run(r0, t_max, t_step, r1)
         rt = np.array(dgl.rt)
         # change start_idx depending on resolution --> maybe better throw away fixed number of zero_crossings(prob:slower)
