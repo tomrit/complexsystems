@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-
+import gc
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -60,11 +60,11 @@ cores = mp.cpu_count()
 # for running without X-Server
 
 # Parameter settinge:
-t_max = 2.0
-t_discard = 1.5
+t_max = 0.2
+t_discard = 0.05
 discard_frac = t_discard / t_max
-t_step = 5e-6  # 1e-5 is nicer
-N = 128
+t_step = 1e-5  # 1e-5 is nicer
+N = 32
 rmin = 20.64e3
 rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
@@ -73,9 +73,6 @@ markersize = 1
 # r1s = np.linspace(19e3, 22e3,N)
 # r1s=[20.699e3]
 r0 = [0, 0.5, 0.75e-3]
-v1s = []
-rrls = []
-
 
 def parameter_swipe():
 
@@ -123,6 +120,7 @@ def parameter_swipe():
     # plt.show()
 
 
+gc.enable()
 def main_eval(thread_nr):
     v1_poincare = []
     r1_vec = []
@@ -130,6 +128,7 @@ def main_eval(thread_nr):
         print("[{}/{}]: starting for r1 = {:.0f} Ohm".format(idx_r1 * cores + thread_nr, N, r1))
         dgl_time = time.time()
         dgl = run(r0, t_max, t_step, r1)
+        gc.collect()  # free all unallocated memory (otherwise RAM usage rises to 10GB in some minutes) don't know reason
         print("[{}/{}]: solving took {:.2f}s".format(idx_r1 * cores + thread_nr, N, time.time() - dgl_time))
         traject = np.array(dgl.rt)
         start_idx = np.floor(discard_frac * len(traject))
@@ -141,7 +140,6 @@ def main_eval(thread_nr):
         v1dif = traject[zero_crossings + 1, 0] - traject[zero_crossings, 0]
         v2part = -traject[zero_crossings, 1]
         v1add = v2part / v2dif * v1dif
-
         v1_poincare.append((copy.copy(traject[zero_crossings, 0] + v1add)))
         nr_crossings = len(v1_poincare[idx_r1])
         r1_vec.append((copy.copy(np.array([copy.copy(r1)] * nr_crossings))))
