@@ -8,6 +8,7 @@ import copy
 import multiprocessing as mp
 
 from tools import Dgl
+from tools import plot_1Dfile
 
 
 def f_shinriki_dgl(t, r, r1=22e3):
@@ -55,12 +56,14 @@ def get_zero_crossings(array):
 cores = mp.cpu_count()
 
 # Parameter settinge:
-t_max = 0.2
-t_discard = 0.05
+t_max = 0.4
+t_discard = 0.1
 discard_frac = t_discard / t_max
 t_step = 5e-5  # 1e-5 is nicer
-N = 8
-r1s = np.linspace(20.62e3, 20.75e3, N)
+N = 4
+rmin = 20.64e3
+rmax = 20.74e3
+r1s = np.linspace(rmin, rmax, N)
 markersize = 1
 
 # r1s = np.linspace(19e3, 22e3,N)
@@ -74,6 +77,8 @@ def parameter_swipe():
     # t_max = 1.5  # better 1.0
     # t_discard=1.0
 
+    outputname = "shinriki_bifurc__rmin_{}__rmax_{}__N_{}__tmax_{}__tdis_{}__tstep_{}".format(rmin, rmax, N, t_max,
+                                                                                              t_discard, t_step)
 
     # initialize output figure:
     fig_bifurc = plt.figure()
@@ -83,30 +88,33 @@ def parameter_swipe():
 
     res = pool.map(main_eval, (1, 2, 3, 4))
     # print(res[1][1][0])
-
+    datafile_path = outputname + ".txt"
+    datafile_id = open(datafile_path, 'w+')
+    datafile_id.write("r" + " " * 9 + "V1\n\n")
     for idx in range(0, cores):
         for jdx in range(0, N / cores):
             ax_bifurc.plot(res[idx][0][jdx] / 1000, res[idx][1][jdx], '.r', markersize=markersize)
+            temp_data = np.array([np.array(res[idx][0][jdx] / 1000), np.array(res[idx][1][jdx])])
+            temp_data = temp_data.T
+            np.savetxt(datafile_id, temp_data, fmt=['%f', '%f'])
+    datafile_id.close()
 
-    ax_bifurc.set_xlim(20.5, 20.8)
-    # ax_bifurc.set_xlim(18.5,19.5)
-    # ax_bifurc.set_xlim(20.690,20.710)
-    # ax_bifurc.set_ylim(0.24, 0.32)
+    ax_bifurc.set_xlim(rmin - 0.02, rmax + 0.02)
     ax_bifurc.set_xlabel(r'$R_1$ [k$\Omega$]')
     ax_bifurc.set_ylabel(r'$V_1$ [V]')
     ax_bifurc.set_title(r'Bifurcation Diagram of the Shinriki Oscillator ($V_2=0$)')
     fig_bifurc.set_size_inches(10, 7)
     fig_bifurc.set_dpi = 500
-    fig_bifurc.savefig("shinriki_bifurcation_t.png", dpi=500)
+    fig_bifurc.savefig(outputname + ".png", dpi=500)
 
-    plt.show()
+    # plt.show()
 
 
 def main_eval(thread_nr):
     v1_poincare = []
     r1_vec = []
     for idx_r1, r1 in enumerate(r1s[N / cores * (thread_nr - 1):N / cores * thread_nr]):
-        print("[{}/{}]: Running solver for \t r1 = {:.0f} Ohm".format(idx_r1 + 1, N, r1))
+        print("[{}/{}]: Running solver for \t r1 = {:.0f} Ohm".format(idx_r1 * cores + thread_nr, N, r1))
         dgl = run(r0, t_max, t_step, r1)
         traject = np.array(dgl.rt)
         # change start_idx depending on resolution --> maybe better throw away fixed number of zero_crossings(prob:slower)
@@ -132,3 +140,4 @@ def main_eval(thread_nr):
 
 
 parameter_swipe()
+#plot_1Dfile("test.txt")

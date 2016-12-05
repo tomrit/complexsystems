@@ -1,7 +1,7 @@
 from scipy.integrate import ode
 import numpy as np
 import copy
-
+import matplotlib.pyplot as plt
 
 class Dgl(object):
     """
@@ -70,3 +70,10 @@ def get_subplots_squared(length):
 def get_a4_width():
     a4_width = 448.13095 / 72.27
     return a4_width
+
+
+def plot_1Dfile(filename):
+    data = np.genfromtxt(filename, delimiter=" ", skip_header=2)
+    print data
+    plt.plot(data[:, 0], data[:, 1], '.r')
+    plt.show()
