@@ -64,8 +64,8 @@ t_max = 0.2
 t_discard = 0.05
 discard_frac = t_discard / t_max
 t_step = 1e-5  # 1e-5 is nicer
-N = 32
-rmin = 20.64e3
+N = 8
+rmin = 20.62e3
 rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
 markersize = 1
@@ -108,7 +108,7 @@ def parameter_swipe():
             np.savetxt(datafile_id, temp_data, fmt=['%f', '%f'])
     datafile_id.close()
 
-    ax_bifurc.set_xlim(rmin - 0.02, rmax + 0.02)
+    ax_bifurc.set_xlim(rmin / 1000 - 0.02, rmax / 1000 + 0.02)
     ax_bifurc.set_xlabel(r'$R_1$ [k$\Omega$]')
     ax_bifurc.set_ylabel(r'$V_1$ [V]')
     ax_bifurc.set_title(r'Bifurcation Diagram of the Shinriki Oscillator ($V_2=0$)')
