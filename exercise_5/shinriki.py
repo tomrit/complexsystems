@@ -95,13 +95,24 @@ def plot():
     plt.show()
 
 
+global t_max
+global discard_frac
+global t_step
+global r0
+global r1s
+
 def parameter_swipe():
-    t_max = 0.5  # better 1.0
-    t_step = 1e-4  # 1e-5 is nicer
+    # t_max = 1.5  # better 1.0
+    # t_discard=1.0
+    t_max = 2.0
+    t_discard = 1.5
+    discard_frac = t_discard / t_max
+    t_step = 5e-6  # 1e-5 is nicer
     r0 = [0, 0.5, 0.75e-3]
-    N = 30
-    # r1s = np.linspace(20.3e3, 20.8e3, N)
-    r1s = np.linspace(19e3, 22e3,N)
+    N = 10
+    r1s = np.linspace(20.62e3, 20.75e3, N)
+    # r1s = np.linspace(19e3, 22e3,N)
+    #r1s=[20.699e3]
     v1s = []
     rrls = []
     fig_bifurc = plt.figure()
@@ -111,8 +122,8 @@ def parameter_swipe():
         dgl = run(r0, t_max, t_step, r1)
         rt = np.array(dgl.rt)
         # change start_idx depending on resolution --> maybe better throw away fixed number of zero_crossings(prob:slower)
-        start_idx = 10000
-        print(len(rt))
+        # start_idx = 300000
+        start_idx = np.floor(discard_frac * len(rt))
         rt = rt[start_idx:]
         zero_crossings = get_zero_crossings(rt[:, 1])
         # linear interpolation: very essential here! brings much more than finer resolution!
@@ -124,9 +135,23 @@ def parameter_swipe():
         # print v1
         r_vec = np.array([copy.copy(r1)] * len(v1))
         ax_bifurc.plot(r_vec / 1000, v1, '.r')
+        print (len(v1))
+        qual = np.max(v1) - np.min(v1)
+        print(qual)
 
-    ax_bifurc.set_xlim(18.7,22.3)
+    ax_bifurc.set_xlim(20.5, 20.8)
+    # ax_bifurc.set_xlim(18.5,19.5)
+    # ax_bifurc.set_xlim(20.690,20.710)
+    # ax_bifurc.set_ylim(0.24, 0.32)
+    ax_bifurc.set_xlabel(r'$R_1$ [k$\Omega$]')
+    ax_bifurc.set_ylabel(r'$V_1$ [V]')
+    ax_bifurc.set_title(r'Bifurcation Diagram of the Shinriki Oscillator ($V_2=0$)')
+    fig_bifurc.set_size_inches(10, 7)
+    fig_bifurc.set_dpi = 500
+    fig_bifurc.savefig("shinriki_bifurcation.png", dpi=500)
+
     plt.show()
+
 
     def plot_colored():
         # http://matplotlib.org/examples/pylab_examples/multicolored_line.html
@@ -157,3 +182,6 @@ def parameter_swipe():
 
 # plot()
 parameter_swipe()
+
+# TODO: Progress Bars, self-explaining variable names,  Info-Prints, better available parameter changes, suggestions
+# TODO: for different parts
