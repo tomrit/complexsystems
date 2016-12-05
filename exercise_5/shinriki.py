@@ -107,7 +107,7 @@ def parameter_swipe():
     t_max = 2.0
     t_discard = 1.5
     discard_frac = t_discard / t_max
-    t_step = 5e-6  # 1e-5 is nicer
+    t_step = 1e-4  # 1e-5 is nicer
     r0 = [0, 0.5, 0.75e-3]
     N = 10
     r1s = np.linspace(20.62e3, 20.75e3, N)

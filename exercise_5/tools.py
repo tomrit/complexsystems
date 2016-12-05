@@ -7,14 +7,15 @@ class Dgl(object):
     """
     Solve DGLs with dopri5 integrator
     """
-    def __init__(self, function, r0, parameter, trace=False):
+
+    def __init__(self, function, r0, parameter, tolerance, trace=False):
         self.function = function
         self.r0 = r0
         self.t0 = 0
         self.rt = []
         self.xt = []
         self.yt = []
-        self.dgl = ode(self.function).set_integrator('dopri5')
+        self.dgl = ode(self.function).set_integrator('dopri5', rtol=tolerance, nsteps=10000)
         self.dgl.set_f_params(parameter)
         if trace:
             self.dgl.set_solout(self.solout)
@@ -24,6 +25,7 @@ class Dgl(object):
         self.rt.append(copy.copy(r))
         self.xt.append(copy.copy(r[0]))
         self.yt.append(copy.copy(r[1]))
+        # print(self.dgl.t)
 
     def solve(self, t_max):
         return self.dgl.integrate(t_max)

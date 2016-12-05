@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib
 import gc
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.collections import LineCollection
@@ -40,11 +40,12 @@ def f_shinriki_dgl(t, r, r1=22e3):
     return [dv1, dv2, di3]
 
 
-def run(r0, t_max, t_step=0.001, r1=22e3):
+def run(r0, t_max, t_step=0.001, r1=22e3, tolerance=1e-9):
     start_time = time.time()
-    dgl = Dgl(f_shinriki_dgl, r0, r1, trace=True)
+    dgl = Dgl(f_shinriki_dgl, r0, r1, tolerance, trace=True)
     while dgl.dgl.t < t_max:
         dgl.solve(dgl.dgl.t + t_step)
+        # print "new step"
     return dgl
 
 
@@ -60,24 +61,24 @@ cores = mp.cpu_count()
 # for running without X-Server
 
 # Parameter settinge:
-t_max = 0.2
-t_discard = 0.05
+t_max = 1.8
+t_discard = 1.3
 discard_frac = t_discard / t_max
-t_step = 1e-5  # 1e-5 is nicer
-N = 8
-rmin = 20.62e3
-rmax = 20.74e3
+t_step = 1e-4  # 1e-5 is nicer
+N = 64
+rmin = 20.69e3
+rmax = 20.73e3
+# rmin = 20.62e3
+#rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
 markersize = 1
+tolerance = 5e-10
 
-# r1s = np.linspace(19e3, 22e3,N)
-# r1s=[20.699e3]
 r0 = [0, 0.5, 0.75e-3]
 
 def parameter_swipe():
-
-    outputname = "shinriki_bifurc__rmin_{}__rmax_{}__N_{}__tmax_{}__tdis_{}__tstep_{}".format(rmin, rmax, N, t_max,
-                                                                                              t_discard, t_step)
+    outputname = "shinriki_bifurc__rmin_{}__rmax_{}__N_{}__tmax_{}__tdis_{}__tol_{}".format(rmin, rmax, N, t_max,
+                                                                                            t_discard, tolerance)
     print(
     "This simulation evaluates the bifurcation diagram of the Shinriki Oscillator for the following parameters:\n")
     print("r_min={:.0f}".format(rmin))
@@ -109,6 +110,7 @@ def parameter_swipe():
     datafile_id.close()
 
     ax_bifurc.set_xlim(rmin / 1000 - 0.02, rmax / 1000 + 0.02)
+    ax_bifurc.set_ylim(1.0, 1.5)
     ax_bifurc.set_xlabel(r'$R_1$ [k$\Omega$]')
     ax_bifurc.set_ylabel(r'$V_1$ [V]')
     ax_bifurc.set_title(r'Bifurcation Diagram of the Shinriki Oscillator ($V_2=0$)')
@@ -117,7 +119,7 @@ def parameter_swipe():
     fig_bifurc.savefig(outputname + ".png", dpi=500)
 
     print("\nThe simulation took {:.2f} s".format(time.time() - zero_time))
-    # plt.show()
+    #plt.show()
 
 
 gc.enable()
@@ -127,7 +129,7 @@ def main_eval(thread_nr):
     for idx_r1, r1 in enumerate(r1s[N / cores * (thread_nr - 1):N / cores * thread_nr]):
         print("[{}/{}]: starting for r1 = {:.0f} Ohm".format(idx_r1 * cores + thread_nr, N, r1))
         dgl_time = time.time()
-        dgl = run(r0, t_max, t_step, r1)
+        dgl = run(r0, t_max, t_step, r1, tolerance)
         gc.collect()  # free all unallocated memory (otherwise RAM usage rises to 10GB in some minutes) don't know reason
         print("[{}/{}]: solving took {:.2f}s".format(idx_r1 * cores + thread_nr, N, time.time() - dgl_time))
         traject = np.array(dgl.rt)
@@ -142,6 +144,8 @@ def main_eval(thread_nr):
         v1add = v2part / v2dif * v1dif
         v1_poincare.append((copy.copy(traject[zero_crossings, 0] + v1add)))
         nr_crossings = len(v1_poincare[idx_r1])
+        # qual=np.max(v1_poincare[idx_r1])-np.min(v1_poincare[idx_r1])
+        #print(qual)
         r1_vec.append((copy.copy(np.array([copy.copy(r1)] * nr_crossings))))
         print("[{}/{}]: Saved {} crossings trough cross section (V2=0)\n\r".format(idx_r1 * cores + thread_nr, N,
                                                                                    nr_crossings))
