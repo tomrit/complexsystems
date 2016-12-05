@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib as mp
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.collections import LineCollection
@@ -54,13 +55,14 @@ def get_zero_crossings(array):
 
 
 cores = mp.cpu_count()
-
+# for running without X-Server
+mp.use('Agg')
 # Parameter settinge:
-t_max = 0.4
-t_discard = 0.1
+t_max = 2.0
+t_discard = 1.5
 discard_frac = t_discard / t_max
-t_step = 5e-5  # 1e-5 is nicer
-N = 4
+t_step = 5e-6  # 1e-5 is nicer
+N = 128
 rmin = 20.64e3
 rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
