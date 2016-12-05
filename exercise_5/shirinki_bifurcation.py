@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib
 import gc
-# matplotlib.use('Agg')
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.collections import LineCollection
