@@ -61,8 +61,8 @@ cores = mp.cpu_count()
 # for running without X-Server
 
 # Parameter settinge:
-t_max = 1.8
-t_discard = 1.3
+t_max = 1.4
+t_discard = 1.0
 discard_frac = t_discard / t_max
 t_step = 1e-4  # 1e-5 is nicer
 N = 64
@@ -72,7 +72,7 @@ rmax = 20.73e3
 #rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
 markersize = 1
-tolerance = 5e-10
+tolerance = 8e-10
 
 r0 = [0, 0.5, 0.75e-3]
 
