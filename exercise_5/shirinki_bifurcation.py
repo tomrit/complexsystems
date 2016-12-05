@@ -45,7 +45,6 @@ def run(r0, t_max, t_step=0.001, r1=22e3):
     dgl = Dgl(f_shinriki_dgl, r0, r1, trace=True)
     while dgl.dgl.t < t_max:
         dgl.solve(dgl.dgl.t + t_step)
-    print("Running dgl solver took: \t {:.2f}s".format(time.time() - start_time))
     return dgl
 
 
@@ -56,6 +55,7 @@ def get_zero_crossings(array):
     return np.where(np.diff(np.sign(array)) == 2)[0]
 
 
+zero_time = time.time()
 cores = mp.cpu_count()
 # for running without X-Server
 
@@ -64,7 +64,7 @@ t_max = 2.0
 t_discard = 1.5
 discard_frac = t_discard / t_max
 t_step = 5e-6  # 1e-5 is nicer
-N = 4
+N = 128
 rmin = 20.64e3
 rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
@@ -78,11 +78,17 @@ rrls = []
 
 
 def parameter_swipe():
-    # t_max = 1.5  # better 1.0
-    # t_discard=1.0
 
     outputname = "shinriki_bifurc__rmin_{}__rmax_{}__N_{}__tmax_{}__tdis_{}__tstep_{}".format(rmin, rmax, N, t_max,
                                                                                               t_discard, t_step)
+    print(
+    "This simulation evaluates the bifurcation diagram of the Shinriki Oscillator for the following parameters:\n")
+    print("r_min={:.0f}".format(rmin))
+    print("r_max={:.0f}".format(rmax))
+    print("r_steps={}".format(N))
+    print("dgl_tmax={}".format(t_max))
+    print("dgl_t_discarded={}".format(t_discard))
+    print("dgl_t_stepsize={}\n".format(t_step))
 
     # initialize output figure:
     fig_bifurc = plt.figure()
@@ -90,7 +96,9 @@ def parameter_swipe():
 
     pool = mp.Pool(processes=cores)
 
+
     res = pool.map(main_eval, (1, 2, 3, 4))
+    print("Generating plots and output files...")
     # print(res[1][1][0])
     datafile_path = outputname + ".txt"
     datafile_id = open(datafile_path, 'w+')
@@ -111,6 +119,7 @@ def parameter_swipe():
     fig_bifurc.set_dpi = 500
     fig_bifurc.savefig(outputname + ".png", dpi=500)
 
+    print("\nThe simulation took {:.2f} s".format(time.time() - zero_time))
     # plt.show()
 
 
@@ -118,11 +127,11 @@ def main_eval(thread_nr):
     v1_poincare = []
     r1_vec = []
     for idx_r1, r1 in enumerate(r1s[N / cores * (thread_nr - 1):N / cores * thread_nr]):
-        print("[{}/{}]: Running solver for \t r1 = {:.0f} Ohm".format(idx_r1 * cores + thread_nr, N, r1))
+        print("[{}/{}]: starting for r1 = {:.0f} Ohm".format(idx_r1 * cores + thread_nr, N, r1))
+        dgl_time = time.time()
         dgl = run(r0, t_max, t_step, r1)
+        print("[{}/{}]: solving took {:.2f}s".format(idx_r1 * cores + thread_nr, N, time.time() - dgl_time))
         traject = np.array(dgl.rt)
-        # change start_idx depending on resolution --> maybe better throw away fixed number of zero_crossings(prob:slower)
-        # start_idx = 300000
         start_idx = np.floor(discard_frac * len(traject))
         traject = traject[start_idx:]
         zero_crossings = get_zero_crossings(traject[:, 1])
@@ -136,7 +145,8 @@ def main_eval(thread_nr):
         v1_poincare.append((copy.copy(traject[zero_crossings, 0] + v1add)))
         nr_crossings = len(v1_poincare[idx_r1])
         r1_vec.append((copy.copy(np.array([copy.copy(r1)] * nr_crossings))))
-        print("Saved {} crossings trough cross section (V2=0)\n\r".format(nr_crossings))
+        print("[{}/{}]: Saved {} crossings trough cross section (V2=0)\n\r".format(idx_r1 * cores + thread_nr, N,
+                                                                                   nr_crossings))
     return r1_vec, v1_poincare
     # ax_bifurc.plot(r1_vec / 1000, v1_poincare, '.r',markersize=markersize)
     # qual=np.max(v1)-np.min(v1)
@@ -144,4 +154,4 @@ def main_eval(thread_nr):
 
 
 parameter_swipe()
-#plot_1Dfile("test.txt")
+# plot_1Dfile("test.txt")
