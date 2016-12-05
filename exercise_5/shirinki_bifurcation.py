@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib as mp
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.collections import LineCollection
@@ -56,7 +56,7 @@ def get_zero_crossings(array):
 
 cores = mp.cpu_count()
 # for running without X-Server
-mp.use('Agg')
+matplotlib.use('Agg')
 # Parameter settinge:
 t_max = 2.0
 t_discard = 1.5
