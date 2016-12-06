@@ -15,6 +15,7 @@ def map_step(x, r):
     return x_new
 
 
+# find the end orbit points / attractor for a given parameter r:
 def attractor(r, steps_total, steps_discard=0, plot_show=False):
     time_series = np.zeros(steps_total)
     x = x_start

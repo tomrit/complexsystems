@@ -52,7 +52,7 @@ def run(r0, t_max, t_step=0.001, r1=22e3):
 
 
 def plot():
-    t_max = 0.5
+    t_max = 0.25
     t_step = 1e-5
     r0 = [0, 0.5, 0.75e-3]
     dgl = run(r0, t_max, t_step)
@@ -95,28 +95,63 @@ def plot():
     plt.show()
 
 
+global t_max
+global discard_frac
+global t_step
+global r0
+global r1s
+
 def parameter_swipe():
-    t_max = 0.5
-    t_step = 1e-5
+    # t_max = 1.5  # better 1.0
+    # t_discard=1.0
+    t_max = 2.0
+    t_discard = 1.5
+    discard_frac = t_discard / t_max
+    t_step = 1e-4  # 1e-5 is nicer
     r0 = [0, 0.5, 0.75e-3]
-    N = 5
-    r1s = np.linspace(19e3, 22e3, N)
+    N = 10
+    r1s = np.linspace(20.62e3, 20.75e3, N)
+    # r1s = np.linspace(19e3, 22e3,N)
+    #r1s=[20.699e3]
     v1s = []
     rrls = []
-
+    fig_bifurc = plt.figure()
+    ax_bifurc = fig_bifurc.add_subplot(111)
     for r1 in r1s:
+        print(r1)
         dgl = run(r0, t_max, t_step, r1)
         rt = np.array(dgl.rt)
-        start_idx = 300
+        # change start_idx depending on resolution --> maybe better throw away fixed number of zero_crossings(prob:slower)
+        # start_idx = 300000
+        start_idx = np.floor(discard_frac * len(rt))
         rt = rt[start_idx:]
-
         zero_crossings = get_zero_crossings(rt[:, 1])
+        # linear interpolation: very essential here! brings much more than finer resolution!
+        v2dif = rt[zero_crossings + 1, 1] - rt[zero_crossings, 1]
+        v1dif = rt[zero_crossings + 1, 0] - rt[zero_crossings, 0]
+        v2part = -rt[zero_crossings, 1]
+        v1add = v2part / v2dif * v1dif
+        v1 = rt[zero_crossings, 0] + v1add
+        # print v1
+        r_vec = np.array([copy.copy(r1)] * len(v1))
+        ax_bifurc.plot(r_vec / 1000, v1, '.r')
+        print (len(v1))
+        qual = np.max(v1) - np.min(v1)
+        print(qual)
 
-        v1 = rt[zero_crossings, 0]
-        v1s.append(copy.copy(v1))
-        rrls.append([copy.copy(r1)] * len(v1))
-    plt.plot(r1s, v1s, '.r')
+    ax_bifurc.set_xlim(20.5, 20.8)
+    # ax_bifurc.set_xlim(18.5,19.5)
+    # ax_bifurc.set_xlim(20.690,20.710)
+    # ax_bifurc.set_ylim(0.24, 0.32)
+    ax_bifurc.set_xlabel(r'$R_1$ [k$\Omega$]')
+    ax_bifurc.set_ylabel(r'$V_1$ [V]')
+    ax_bifurc.set_title(r'Bifurcation Diagram of the Shinriki Oscillator ($V_2=0$)')
+    fig_bifurc.set_size_inches(10, 7)
+    fig_bifurc.set_dpi = 500
+    fig_bifurc.savefig("shinriki_bifurcation.png", dpi=500)
+
     plt.show()
+
 
     def plot_colored():
         # http://matplotlib.org/examples/pylab_examples/multicolored_line.html
@@ -145,5 +180,8 @@ def parameter_swipe():
         ax.autoscale_view()
 
 
-plot()
-# parameter_swipe()
+# plot()
+parameter_swipe()
+
+# TODO: Progress Bars, self-explaining variable names,  Info-Prints, better available parameter changes, suggestions
+# TODO: for different parts

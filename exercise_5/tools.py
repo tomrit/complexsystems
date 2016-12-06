@@ -1,20 +1,21 @@
 from scipy.integrate import ode
 import numpy as np
 import copy
-
+import matplotlib.pyplot as plt
 
 class Dgl(object):
     """
     Solve DGLs with dopri5 integrator
     """
-    def __init__(self, function, r0, parameter, trace=False):
+
+    def __init__(self, function, r0, parameter, tolerance, trace=False):
         self.function = function
         self.r0 = r0
         self.t0 = 0
         self.rt = []
         self.xt = []
         self.yt = []
-        self.dgl = ode(self.function).set_integrator('dopri5')
+        self.dgl = ode(self.function).set_integrator('dopri5', rtol=tolerance, nsteps=10000)
         self.dgl.set_f_params(parameter)
         if trace:
             self.dgl.set_solout(self.solout)
@@ -24,6 +25,7 @@ class Dgl(object):
         self.rt.append(copy.copy(r))
         self.xt.append(copy.copy(r[0]))
         self.yt.append(copy.copy(r[1]))
+        # print(self.dgl.t)
 
     def solve(self, t_max):
         return self.dgl.integrate(t_max)
@@ -70,3 +72,10 @@ def get_subplots_squared(length):
 def get_a4_width():
     a4_width = 448.13095 / 72.27
     return a4_width
+
+
+def plot_1Dfile(filename):
+    data = np.genfromtxt(filename, delimiter=" ", skip_header=2)
+    print data
+    plt.plot(data[:, 0], data[:, 1], '.r')
+    plt.show()

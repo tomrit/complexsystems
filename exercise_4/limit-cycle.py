@@ -36,27 +36,18 @@ pp = PdfPages("exercise4_Limit-Cycle.pdf")
 fig1, ax_array = plt.subplots(n_rows, n_cols, figsize=(a4_width, a4_width))
 ax_array_flat = ax_array.reshape(-1)
 
-for idx, a in enumerate(a_range):
-    print("a = {:>4.2f} {:>2}/{}".format(a + 1, idx, a_range.size))
-    current_axis = ax_array_flat[idx]
-    x, y, dx, dy = mesh.create_phase_space(f_limit_cycle_xy, a)
-    current_axis.streamplot(x, y, dx, dy, density=2)
-    current_axis.set_title("a = {:.1f}".format(a))
-    current_axis.set_xlim(mesh.x_min, mesh.x_max)
-    current_axis.set_ylim(mesh.y_min, mesh.y_max)
-
-pp.savefig(fig1, transparent=True, bbox_inches='tight')
-
 fig2, ax1 = plt.subplots(1, 1, figsize=(a4_width, a4_width))
 
 # Solving differential equations with Runge-Kutta - dopri5
 for a in a_range:
-    x0 = (2, 2)
+    x0 = (0.5, 0.7)
     dgl = (Dgl(f_limit_cycle, x0, a, True))
-    dgl.solve(50)
-
+    while len(dgl.xt) < 50000:
+        dgl.solve(50)
+    
     ax1.plot(dgl.xt, dgl.yt, label="a = {:.1f}".format(a))
-
+    length_traject = len(dgl.xt)
+    print(length_traject)
     ax1.set_xlim(mesh.x_min, mesh.x_max)
     ax1.set_ylim(mesh.y_min, mesh.y_max)
     ax1.legend(loc="best")
