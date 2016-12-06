@@ -60,7 +60,7 @@ for column, steps_plotted in enumerate(steps_plotted_list):
 
         fig_bifurc[fignr].set_size_inches(10, 7)
         fig_bifurc[fignr].set_dpi = 300
-        print fignr
+        print(fignr)
         # ax_bifurc[fignr]=fig_bifurc.add_subplot(len(markersizes),len(steps_plotted_list),fignr+1)
         ax_bifurc[fignr] = fig_bifurc[fignr].add_subplot(1, 1, 1)
         ax_bifurc[fignr].plot(r_bifurc, x_bifurc, 'k.', markersize=markersize)
