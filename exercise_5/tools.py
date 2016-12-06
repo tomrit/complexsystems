@@ -8,7 +8,7 @@ class Dgl(object):
     Solve DGLs with dopri5 integrator
     """
 
-    def __init__(self, function, r0, parameter, tolerance, trace=False):
+    def __init__(self, function, r0, parameter, tolerance=1e-8, trace=False):
         self.function = function
         self.r0 = r0
         self.t0 = 0
