@@ -12,7 +12,8 @@
 
 import numpy as np
 import matplotlib
-matplotlib.use('Agg') # use a non-interactive backend - generate images without having a window appear
+
+matplotlib.use('Agg')  # use a non-interactive backend - generate images without having a window appear
 import gc
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -44,7 +45,6 @@ discard_frac = t_discard / t_max
 t_step = 1e-4
 r1s = np.linspace(rmin, rmax, N)
 cores = mp.cpu_count()
-
 
 
 def f_shinriki_dgl(t, r, r1=22e3):
@@ -121,7 +121,7 @@ def main():
     outputname = "shinriki_bifurc__rmin_{}__rmax_{}__N_{}__tmax_{}__tdis_{}__tol_{}".format(rmin, rmax, N, t_max,
                                                                                             t_discard, tolerance)
     print(
-    "This simulation evaluates the bifurcation diagram of the Shinriki Oscillator for the following parameters:\n")
+        "This simulation evaluates the bifurcation diagram of the Shinriki Oscillator for the following parameters:\n")
     print("r_min={:.0f}".format(rmin))
     print("r_max={:.0f}".format(rmax))
     print("r_steps={}".format(N))
@@ -134,7 +134,6 @@ def main():
     ax_bifurc = fig_bifurc.add_subplot(111)
 
     pool = mp.Pool(processes=cores)
-
 
     res = pool.map(main_eval, (1, 2, 3, 4))
     print("Generating plots and output files...")
@@ -160,9 +159,7 @@ def main():
     fig_bifurc.savefig(outputname + ".png", dpi=500)
 
     print("\nThe simulation took {:.2f} s".format(time.time() - zero_time))
-    #plt.show()
-
-
+    # plt.show()
 
     # Quality-Check: Height of Lines....
     # ax_bifurc.plot(r1_vec / 1000, v1_poincare, '.r',markersize=markersize)
