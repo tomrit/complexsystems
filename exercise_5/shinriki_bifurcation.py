@@ -12,7 +12,7 @@
 
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') # use a non-interactive backend - generate images without having a window appear
 import gc
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -28,6 +28,7 @@ from tools import Dgl
 
 t_max = 1.5
 t_discard = 0.8
+
 N = 256
 rmin = 19e3
 rmax = 22e3
