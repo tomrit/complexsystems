@@ -1,3 +1,15 @@
+#! /usr/bin/env python
+
+#####################################################################
+# Thomas Rittmann & John Gaida;    Dec 06, 2016
+#
+# This program evaluates the Bifurcation of the Shinriki Oscillator:
+# It computes which values for V1 (and what kind of period orbits)
+# are reached at the Poincare surface (for V2=0)
+# depending on the resistivity R1 (which acts as bifurcation parameter).
+#
+#######################################################################
+
 import numpy as np
 import matplotlib
 import gc
@@ -62,18 +74,18 @@ cores = mp.cpu_count()
 # for running without X-Server
 
 # Parameter settinge:
-t_max = 2.0
-t_discard = 1.1
+t_max = 1.5
+t_discard = 0.8
 discard_frac = t_discard / t_max
 t_step = 1e-4  # 1e-5 is nicer
 N = 256
-rmin = 20.69e3
-rmax = 20.73e3
+rmin = 20.17e3
+rmax = 21.1e3
 # rmin = 20.62e3
 #rmax = 20.74e3
 r1s = np.linspace(rmin, rmax, N)
 markersize = 1
-tolerance = 8e-10
+tolerance = 8e-9
 
 r0 = [0, 0.5, 0.75e-3]
 
@@ -111,7 +123,7 @@ def parameter_swipe():
     datafile_id.close()
 
     ax_bifurc.set_xlim(rmin / 1000 - 0.002, rmax / 1000 + 0.002)
-    ax_bifurc.set_ylim(1.05, 1.45)
+    ax_bifurc.set_ylim(-0.2, 2.2)
     ax_bifurc.set_xlabel(r'$R_1$ [k$\Omega$]')
     ax_bifurc.set_ylabel(r'$V_1$ [V]')
     ax_bifurc.set_title(r'Bifurcation Diagram of the Shinriki Oscillator ($V_2=0$)')
