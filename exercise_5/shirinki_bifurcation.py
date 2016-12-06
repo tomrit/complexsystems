@@ -12,7 +12,7 @@
 
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') # use a non-interactive backend - generate images without having a window appear
 import gc
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
