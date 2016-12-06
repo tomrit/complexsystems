@@ -76,6 +76,6 @@ def get_a4_width():
 
 def plot_1Dfile(filename):
     data = np.genfromtxt(filename, delimiter=" ", skip_header=2)
-    print data
+    print(data)
     plt.plot(data[:, 0], data[:, 1], '.r')
     plt.show()
