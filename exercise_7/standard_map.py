@@ -70,7 +70,7 @@ if __name__ == '__main__':
     p0s = np.linspace(-0.5, 0.5, 20)
 
     N = 9
-    ks = np.linspace(0, 6, N)
+    ks = np.linspace(0.1, 6, N)
 
     n_rows, n_cols = get_subplots_squared(N)
 
@@ -91,7 +91,8 @@ if __name__ == '__main__':
                 current_axis.plot(x, p, '.k', markersize=markersize)
         current_axis.set_xlim(0, 1)
         current_axis.set_ylim(p_interval)
-        current_axis.set_title("k = {}".format(k))
+        current_axis.set_title("k = {:.1f}".format(k))
     plt.show()
 
     pp.savefig(fig1, transparent=True, bbox_inches='tight')
+    pp.close()
