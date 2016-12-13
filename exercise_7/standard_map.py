@@ -14,7 +14,7 @@ print(x)
 
 b = 3.0
 xs = []
-for idx in xrange(iterates):
+for idx in range(iterates):
     x = bernoulli_shift(x, b)
     xs.append(x)
 print(x)
