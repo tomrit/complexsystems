@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 import time
+from tools import get_subplots_squared
 
 
 def x_step(x, p):
@@ -63,14 +65,33 @@ if __name__ == '__main__':
 
     doctest.testmod()
 
-    k = 1
+    p_interval = (-0.5, 0.5)
     x0s = np.linspace(0, 1, 20)
     p0s = np.linspace(-0.5, 0.5, 20)
-    for x0 in x0s:
-        for p0 in p0s:
-            starting_point = (x0, p0)
-            [x, p] = iterate_map(starting_point, k)
-            p_interval = (-0.5, 0.5)
-            p = apply_periodic_boundary(p_interval, p)
-            plt.plot(x, p, '.k')
+
+    N = 9
+    ks = np.linspace(0, 6, N)
+
+    n_rows, n_cols = get_subplots_squared(N)
+
+    pp = PdfPages("exercise7_Standard-Map.png")
+
+    fig1, ax_array = plt.subplots(n_rows, n_cols, figsize=(8, 8))
+    ax_array_flat = ax_array.reshape(-1)
+
+    markersize = 0.1
+    for idx, k in enumerate(ks):
+        current_axis = ax_array_flat[idx]
+
+        for x0 in x0s:
+            for p0 in p0s:
+                starting_point = (x0, p0)
+                [x, p] = iterate_map(starting_point, k)
+                p = apply_periodic_boundary(p_interval, p)
+                current_axis.plot(x, p, '.k', markersize=markersize)
+        current_axis.set_xlim(0, 1)
+        current_axis.set_ylim(p_interval)
+        current_axis.set_title("k = {}".format(k))
     plt.show()
+
+    pp.savefig(fig1, transparent=True, bbox_inches='tight')
