@@ -15,6 +15,18 @@ def xp_step(x, p, k):
     return [x_step(x, p), p_step(x, p, k)]
 
 
+def x_backstep(x, p, k):
+    return (x - p_backstep(x, p, k)) % 1
+
+
+def p_backstep(x, p, k):
+    return p - k / (2 * np.pi) * np.sin(2 * np.pi * x)
+
+
+def xp_backstep(x, p, k):
+    return [x_backstep(x, p, k), p_backstep(x, p, k)]
+
+
 def apply_periodic_boundary(interval, value):
     """
     Applies periodic boundary conditions to value for given interval
