@@ -153,6 +153,7 @@ if __name__ == '__main__':
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.2f}".format(k))
 
-    fig1.savefig("exercise7_Standard-Map.png", dpi=300, transparent=True, bbox_inches='tight')
+    ks_string = "k = "+", ".join("{:.2f}".format(k) for k in ks)
+    fig1.savefig("exercise7_Standard-Map - {}.png".format(ks_string), dpi=300, transparent=True, bbox_inches='tight')
 
     plt.show()
