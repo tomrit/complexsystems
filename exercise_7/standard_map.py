@@ -96,8 +96,15 @@ if __name__ == '__main__':
     ks = np.linspace(0.01, 2, k_size)
     # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
 
-    # Calculation
+    # Calculation of phase space
     results = iterate_k(ks, x0s, p0s, n_steps)
+
+    # Calculation of unstable mannifold at (0.0)
+    epsilon = 0.001
+    delta_x = np.linspace(-epsilon / 2, epsilon / 2, 4)
+    delta_y = delta_x
+
+    mannifold_unstable = iterate_k(ks, delta_x, delta_y, n_steps)
 
     # Plot
     # subplot matrix to show multiple results for different k
@@ -118,7 +125,7 @@ if __name__ == '__main__':
         current_axis = ax_array_flat[k_idx]
 
         current_axis.plot(results[k_idx, :, :, 0], results[k_idx, :, :, 1], '.k', markersize=markersize)
-
+        current_axis.plot(mannifold_unstable[k_idx,:,:,0], mannifold_unstable[k_idx,:,:,1], '.r', markersize=markersize)
         current_axis.set_xlim(0, 1)
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.2f}".format(k))
