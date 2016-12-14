@@ -74,8 +74,6 @@ if __name__ == '__main__':
 
     n_rows, n_cols = get_subplots_squared(N)
 
-    pp = PdfPages("exercise7_Standard-Map.png")
-
     fig1, ax_array = plt.subplots(n_rows, n_cols, figsize=(8, 8))
     ax_array_flat = ax_array.reshape(-1)
 
@@ -92,7 +90,7 @@ if __name__ == '__main__':
         current_axis.set_xlim(0, 1)
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.1f}".format(k))
-    plt.show()
 
-    pp.savefig(fig1, transparent=True, bbox_inches='tight')
-    pp.close()
+    fig1.savefig("exercise7_Standard-Map.png", dpi=300, transparent=True, bbox_inches='tight')
+
+    plt.show()
