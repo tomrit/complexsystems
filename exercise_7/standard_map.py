@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
-import time
 from tools import get_subplots_squared
 
 
@@ -40,12 +38,12 @@ def apply_periodic_boundary(interval, value):
     return ((value + diff) % interval_length) - diff
 
 
-def iterate_map(starting_point, k=0.1, N=1000):
+def iterate_map(starting_point, k=0.1, n_steps=1000):
     x0, p0 = starting_point
-    x = np.zeros(N)
-    p = np.zeros(N)
+    x = np.zeros(n_steps)
+    p = np.zeros(n_steps)
 
-    for idx in range(0, N - 1):
+    for idx in range(0, n_steps - 1):
         x0, p0 = xp_step(x0, p0, k)
         x[idx] = x0
         p[idx] = p0
@@ -53,43 +51,79 @@ def iterate_map(starting_point, k=0.1, N=1000):
     return [x, p]
 
 
-def plot_iterated_map(x, p):
+def iterate_grid(x0s, p0s, n_steps, k):
     p_interval = (-0.5, 0.5)
-    p = apply_periodic_boundary(p_interval, p)
-    plt.plot(x, p, '.')
-    plt.show()
+    grid_size = x0s.size * p0s.size
+    result = np.zeros((grid_size, n_steps, 2))
+    grid_idx = 0
+    for x0 in x0s:
+        for p0 in p0s:
+            starting_point = (x0, p0)
+            [x, p] = iterate_map(starting_point, k, n_steps)
+            p = apply_periodic_boundary(p_interval, p)
+
+            result[grid_idx, :, :] = np.column_stack((x, p))
+
+            grid_idx += 1
+    return result
+
+
+def iterate_k(ks, x0s, p0s, n_steps):
+    grid_size = x0s.size * p0s.size
+    # result matrix: k_size x grid_size x iteration  x 2(x,p)
+    k_size = ks.size
+    results = np.zeros((k_size, grid_size, n_steps, 2))
+
+    for k_idx, k in enumerate(ks):
+        results[k_idx, :] = iterate_grid(x0s, p0s, n_steps, k)
+    return results
 
 
 if __name__ == '__main__':
     import doctest
 
+    # test functions by running the examples from the docstring
     doctest.testmod()
 
+    # Parameters
+    n_steps = 1000
+    n_grid = 20
+    x0s = np.linspace(0, 1, n_grid)
+    p0s = np.linspace(-0.5, 0.5, n_grid)
     p_interval = (-0.5, 0.5)
-    x0s = np.linspace(0, 1, 20)
-    p0s = np.linspace(-0.5, 0.5, 20)
 
-    N = 9
-    ks = np.linspace(0.1, 6, N)
+    k_size = 9
+    ks = np.linspace(0.01, 2, k_size)
+    # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
 
-    n_rows, n_cols = get_subplots_squared(N)
+    # Calculation
+    results = iterate_k(ks, x0s, p0s, n_steps)
 
+    # Plot
+    # subplot matrix to show multiple results for different k
+    n_rows, n_cols = get_subplots_squared(k_size)
+
+    # initialize subplots
     fig1, ax_array = plt.subplots(n_rows, n_cols, figsize=(8, 8))
-    ax_array_flat = ax_array.reshape(-1)
+
+    # catch N=1 because then ax_array is not a list but a single ax object
+    if isinstance(ax_array, np.ndarray):
+        ax_array_flat = ax_array.reshape(-1)
+    else:
+        ax_array_flat = [ax_array]
 
     markersize = 0.1
-    for idx, k in enumerate(ks):
-        current_axis = ax_array_flat[idx]
 
-        for x0 in x0s:
-            for p0 in p0s:
-                starting_point = (x0, p0)
-                [x, p] = iterate_map(starting_point, k)
-                p = apply_periodic_boundary(p_interval, p)
-                current_axis.plot(x, p, '.k', markersize=markersize)
+    for k_idx, k in enumerate(ks):
+        current_axis = ax_array_flat[k_idx]
+
+        # temp = iterate_grid(x0s, p0s, n_steps, k)
+        # current_axis.plot(temp[:,:,0], temp[:,:,1], '.k', markersize=markersize)
+        current_axis.plot(results[k_idx, :, :, 0], results[k_idx, :, :, 1], '.k', markersize=markersize)
+
         current_axis.set_xlim(0, 1)
         current_axis.set_ylim(p_interval)
-        current_axis.set_title("k = {:.1f}".format(k))
+        current_axis.set_title("k = {:.2f}".format(k))
 
     fig1.savefig("exercise7_Standard-Map.png", dpi=300, transparent=True, bbox_inches='tight')
 
