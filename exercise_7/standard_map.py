@@ -50,20 +50,23 @@ def apply_periodic_boundary(interval, value):
     return ((value + diff) % interval_length) - diff
 
 
-def iterate_map(starting_point, k=0.1, n_steps=1000):
+def iterate_map(starting_point, k=0.1, n_steps=1000, backwards=False):
     x0, p0 = starting_point
     x = np.zeros(n_steps)
     p = np.zeros(n_steps)
 
     for idx in range(0, n_steps - 1):
-        x0, p0 = xp_step(x0, p0, k)
+        if backwards:
+            x0, p0 = xp_backstep(x0, p0, k)
+        else:
+            x0, p0 = xp_step(x0, p0, k)
         x[idx] = x0
         p[idx] = p0
 
     return [x, p]
 
 
-def iterate_grid(x0s, p0s, n_steps, k):
+def iterate_grid(x0s, p0s, n_steps, k, backwards=False):
     p_interval = (-0.5, 0.5)
     grid_size = x0s.size * p0s.size
     result = np.zeros((grid_size, n_steps, 2))
@@ -71,7 +74,7 @@ def iterate_grid(x0s, p0s, n_steps, k):
     for x0 in x0s:
         for p0 in p0s:
             starting_point = (x0, p0)
-            [x, p] = iterate_map(starting_point, k, n_steps)
+            [x, p] = iterate_map(starting_point, k, n_steps, backwards)
             p = apply_periodic_boundary(p_interval, p)
 
             result[grid_idx, :, :] = np.column_stack((x, p))
@@ -80,14 +83,14 @@ def iterate_grid(x0s, p0s, n_steps, k):
     return result
 
 
-def iterate_k(ks, x0s, p0s, n_steps):
+def iterate_k(ks, x0s, p0s, n_steps, backwards=False):
     grid_size = x0s.size * p0s.size
     # result matrix: k_size x grid_size x iteration  x 2(x,p)
     k_size = ks.size
     results = np.zeros((k_size, grid_size, n_steps, 2))
 
     for k_idx, k in enumerate(ks):
-        results[k_idx, :] = iterate_grid(x0s, p0s, n_steps, k)
+        results[k_idx, :] = iterate_grid(x0s, p0s, n_steps, k, backwards)
     return results
 
 
