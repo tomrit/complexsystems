@@ -117,8 +117,6 @@ if __name__ == '__main__':
     for k_idx, k in enumerate(ks):
         current_axis = ax_array_flat[k_idx]
 
-        # temp = iterate_grid(x0s, p0s, n_steps, k)
-        # current_axis.plot(temp[:,:,0], temp[:,:,1], '.k', markersize=markersize)
         current_axis.plot(results[k_idx, :, :, 0], results[k_idx, :, :, 1], '.k', markersize=markersize)
 
         current_axis.set_xlim(0, 1)
