@@ -121,6 +121,8 @@ if __name__ == '__main__':
 
     mannifold_unstable = iterate_k(ks, delta_x, delta_y, n_steps)
 
+    mannifold_stable = iterate_k(ks, delta_x, delta_y, n_steps, backwards=True)
+
     # Plot
     # subplot matrix to show multiple results for different k
     n_rows, n_cols = get_subplots_squared(k_size)
@@ -139,8 +141,14 @@ if __name__ == '__main__':
     for k_idx, k in enumerate(ks):
         current_axis = ax_array_flat[k_idx]
 
+        # plot phase space
         current_axis.plot(results[k_idx, :, :, 0], results[k_idx, :, :, 1], '.k', markersize=markersize)
-        current_axis.plot(mannifold_unstable[k_idx,:,:,0], mannifold_unstable[k_idx,:,:,1], '.r', markersize=markersize)
+        # plot unstable mannifold
+        current_axis.plot(mannifold_unstable[k_idx, :, :, 0], mannifold_unstable[k_idx, :, :, 1], '.r',
+                          markersize=markersize)
+        # plot stable mannifold
+        current_axis.plot(mannifold_stable[k_idx, :, :, 0], mannifold_unstable[k_idx, :, :, 1], '.g',
+                          markersize=markersize)
         current_axis.set_xlim(0, 1)
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.2f}".format(k))
