@@ -107,6 +107,7 @@ if __name__ == '__main__':
     p0s = np.linspace(-0.5, 0.5, n_grid)
     p_interval = (-0.5, 0.5)
 
+    # kicking force
     k_size = 9
     ks = np.linspace(0.01, 2, k_size)
     # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
