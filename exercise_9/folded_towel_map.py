@@ -36,10 +36,11 @@ def iterate_map(N=100, x0=[1e-3, 1e-3, 1e-3]):
 def visualize_map(n_steps=100000):
     transient_steps = 100
     x0 = [1, 1, 1]
+    markersize = 0.2
     xn = iterate_map(n_steps, x0)
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    ax.plot(xn[transient_steps:, 0], xn[transient_steps:, 1], xn[transient_steps:, 2], '.', markersize=0.1)
+    ax.plot(xn[transient_steps:, 0], xn[transient_steps:, 1], xn[transient_steps:, 2], '.', markersize=markersize)
     plt.show()
 
 
