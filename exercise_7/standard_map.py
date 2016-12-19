@@ -107,8 +107,9 @@ if __name__ == '__main__':
     p0s = np.linspace(-0.5, 0.5, n_grid)
     p_interval = (-0.5, 0.5)
 
+    # kicking force
     k_size = 4
-    ks = np.linspace(0.01, 1, k_size)
+    ks = np.linspace(0.01, 2, k_size)
     # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
     ks = np.array([0.001, 0.3, 0.971635406, 1])
     k_size = ks.size
@@ -157,6 +158,7 @@ if __name__ == '__main__':
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.2f}".format(k))
 
-    fig1.savefig("exercise7_Standard-Map.png", dpi=300, transparent=True, bbox_inches='tight')
+    ks_string = "k = "+", ".join("{:.2f}".format(k) for k in ks)
+    fig1.savefig("exercise7_Standard-Map - {}.png".format(ks_string), dpi=300, transparent=True, bbox_inches='tight')
 
     plt.show()
