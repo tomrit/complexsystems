@@ -102,26 +102,29 @@ if __name__ == '__main__':
 
     # Parameters
     n_steps = 1000
-    n_grid = 20
+    n_grid = 10
     x0s = np.linspace(0, 1, n_grid)
     p0s = np.linspace(-0.5, 0.5, n_grid)
     p_interval = (-0.5, 0.5)
 
-    k_size = 9
-    ks = np.linspace(0.01, 2, k_size)
+    k_size = 4
+    ks = np.linspace(0.01, 1, k_size)
     # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
+    ks = np.array([0.001, 0.3, 0.971635406, 1])
+    k_size = ks.size
 
     # Calculation of phase space
     results = iterate_k(ks, x0s, p0s, n_steps)
 
     # Calculation of unstable mannifold at (0.0)
-    epsilon = 0.001
+    epsilon = 1e-6
     delta_x = np.linspace(-epsilon / 2, epsilon / 2, 4)
     delta_y = delta_x
 
-    mannifold_unstable = iterate_k(ks, delta_x, delta_y, n_steps)
+    mannifold_steps = 80
+    mannifold_unstable = iterate_k(ks, delta_x, delta_y, mannifold_steps)
 
-    mannifold_stable = iterate_k(ks, delta_x, delta_y, n_steps, backwards=True)
+    mannifold_stable = iterate_k(ks, delta_x, delta_y, mannifold_steps, backwards=True)
 
     # Plot
     # subplot matrix to show multiple results for different k
@@ -136,7 +139,8 @@ if __name__ == '__main__':
     else:
         ax_array_flat = [ax_array]
 
-    markersize = 0.1
+    markersize = 0.3
+    markersize_mannifold = 1
 
     for k_idx, k in enumerate(ks):
         current_axis = ax_array_flat[k_idx]
@@ -145,10 +149,10 @@ if __name__ == '__main__':
         current_axis.plot(results[k_idx, :, :, 0], results[k_idx, :, :, 1], '.k', markersize=markersize)
         # plot unstable mannifold
         current_axis.plot(mannifold_unstable[k_idx, :, :, 0], mannifold_unstable[k_idx, :, :, 1], '.r',
-                          markersize=markersize)
+                          markersize=markersize_mannifold)
         # plot stable mannifold
         current_axis.plot(mannifold_stable[k_idx, :, :, 0], mannifold_unstable[k_idx, :, :, 1], '.g',
-                          markersize=markersize)
+                          markersize=markersize_mannifold)
         current_axis.set_xlim(0, 1)
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.2f}".format(k))
