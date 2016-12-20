@@ -33,14 +33,33 @@ def iterate_map(N=100, x0=[1e-3, 1e-3, 1e-3]):
     return xn
 
 
-def jacobian(x):
-    x = x[0]
-    y = x[1]
-    z = x[2]
+def jacobian(x_):
+    x = x_[0]
+    y = x_[1]
+    z = x_[2]
 
     d1 = [3.8 - 7.6 * x, 0.1 * z - 0.05, 0.1 * (y + 0.35)]
-    d2 = [y(0.38 * z - 0.19) + 0.133 * z + 0.1235, 0.1 * (1 - 1.9 * x) * (1 - 2 * z), -0.2 * (1 - 1.9 * x) * (y + 0.35)]
+    d2 = [y * (0.38 * z - 0.19) + 0.133 * z + 0.1235, 0.1 * (1 - 1.9 * x) * (1 - 2 * z),
+          -0.2 * (1 - 1.9 * x) * (y + 0.35)]
     d3 = [0, 0.2, -3.78 * 2 * z + 3.78]
+    return [d1, d2, d3]
+
+
+def jacobian_vector(xn):
+    x = xn[:, 0]
+    y = xn[:, 1]
+    z = xn[:, 2]
+
+    shape = xn.shape
+    result_vector = np.zeros(shape + (3,))
+
+    result_vector[:, 0, :] = np.column_stack((3.8 - 7.6 * x, 0.1 * z - 0.05, 0.1 * (y + 0.35)))
+    result_vector[:, 1, :] = np.column_stack(
+        (y * (0.38 * z - 0.19) + 0.133 * z + 0.1235, 0.1 * (1 - 1.9 * x) * (1 - 2 * z),
+         -0.2 * (1 - 1.9 * x) * (y + 0.35)))
+    result_vector[:, 2, :] = np.column_stack((np.repeat(0, shape[0]), np.repeat(0.2, shape[0]), -3.78 * 2 * z + 3.78))
+
+    return result_vector
 
 
 def visualize_map(n_steps=100000):
