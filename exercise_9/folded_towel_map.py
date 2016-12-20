@@ -73,5 +73,37 @@ def visualize_map(n_steps=100000):
     plt.show()
 
 
+def calculate_largest_le(n_steps=500):
+    """
+    calculate the largest lyapunov exponent
+    :return:
+
+    """
+    transient_steps = 100
+    x0 = [1, 1, 1]
+    xn = iterate_map(n_steps, x0)
+
+    # temporal evolution of a small perturbation
+    epsilon = 1e-3
+    y0 = np.repeat(epsilon, 3)
+    yn = np.identity(3)
+    for jacobian_matrix in jacobian_vector(xn):
+        yn = yn.dot(jacobian_matrix)
+    yn = yn.dot(y0)
+    le = 1 / n_steps * np.log(np.linalg.norm(yn) / np.linalg.norm(y0))
+
+    return le
+
+
+def visualize_converging_largest_le(N=500):
+    n_steps = np.linspace(1, 1000, N)
+    les = np.zeros(N)
+    for idx, n_step in enumerate(n_steps):
+        les[idx] = calculate_largest_le(int(n_step))
+    plt.plot(n_steps, les)
+    plt.show()
+
+
 if __name__ == '__main__':
-    visualize_map()
+    # visualize_map()
+    # visualize_converging_largest_le()
