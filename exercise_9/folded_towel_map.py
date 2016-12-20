@@ -84,6 +84,10 @@ def calculate_largest_le(n_steps=500):
     return le
 
 
+def calculcate_le_spectrum():
+    return None
+
+
 def visualize_map(n_steps=100000):
     transient_steps = 100
     x0 = [1, 1, 1]
@@ -106,4 +110,4 @@ def visualize_converging_largest_le(N=500):
 
 if __name__ == '__main__':
     # visualize_map()
-    # visualize_converging_largest_le()
+    visualize_converging_largest_le()
