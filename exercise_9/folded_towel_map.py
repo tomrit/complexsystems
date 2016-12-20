@@ -62,17 +62,6 @@ def jacobian_vector(xn):
     return result_vector
 
 
-def visualize_map(n_steps=100000):
-    transient_steps = 100
-    x0 = [1, 1, 1]
-    markersize = 0.2
-    xn = iterate_map(n_steps, x0)
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot(xn[transient_steps:, 0], xn[transient_steps:, 1], xn[transient_steps:, 2], '.', markersize=markersize)
-    plt.show()
-
-
 def calculate_largest_le(n_steps=500):
     """
     calculate the largest lyapunov exponent
@@ -93,6 +82,17 @@ def calculate_largest_le(n_steps=500):
     le = 1 / n_steps * np.log(np.linalg.norm(yn) / np.linalg.norm(y0))
 
     return le
+
+
+def visualize_map(n_steps=100000):
+    transient_steps = 100
+    x0 = [1, 1, 1]
+    markersize = 0.2
+    xn = iterate_map(n_steps, x0)
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot(xn[transient_steps:, 0], xn[transient_steps:, 1], xn[transient_steps:, 2], '.', markersize=markersize)
+    plt.show()
 
 
 def visualize_converging_largest_le(N=500):
