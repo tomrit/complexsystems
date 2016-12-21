@@ -94,6 +94,28 @@ def iterate_k(ks, x0s, p0s, n_steps, backwards=False):
     return results
 
 
+def iterate_coordinates(x0s, p0s, n_steps, k, backwards=False):
+    p_interval = (-0.5, 0.5)
+    n_points = x0s.size
+    result = np.zeros((n_points, n_steps, 2))
+    for idx, x0 in enumerate(x0s):
+        p0 = p0s[idx]
+        starting_point = (x0, p0)
+        [x, p] = iterate_map(starting_point, k, n_steps, backwards)
+        p = apply_periodic_boundary(p_interval, p)
+
+        result[idx, :, :] = np.column_stack((x, p))
+        
+    return result
+
+def iterate_coordinates_k(ks, x0s, p0s, n_steps, backwards=False):
+    n_points = x0s.size
+    k_size = ks.size
+    results = np.zeros((k_size, n_points, n_steps, 2))
+    for k_idx, k in enumerate(ks):
+        results[k_idx, :] = iterate_coordinates(x0s, p0s, n_steps, k, backwards)
+    return results
+
 if __name__ == '__main__':
     import doctest
 
