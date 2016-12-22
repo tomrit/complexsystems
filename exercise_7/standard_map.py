@@ -114,6 +114,7 @@ def iterate_mannifold_k(ks, p0s, n_steps, backwards=False):
     k_size = ks.size
     results = np.zeros((k_size, n_points, n_steps, 2))
     for k_idx, k in enumerate(ks):
+        # starting point is chosen on the eigenvector
         if backwards:
             # stable
             text = " stable"
