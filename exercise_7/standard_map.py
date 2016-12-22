@@ -108,13 +108,24 @@ def iterate_coordinates(x0s, p0s, n_steps, k, backwards=False):
 
     return result
 
-def iterate_coordinates_k(ks, x0s, p0s, n_steps, backwards=False):
-    n_points = x0s.size
+
+def iterate_mannifold_k(ks, p0s, n_steps, backwards=False):
+    n_points = p0s.size
     k_size = ks.size
     results = np.zeros((k_size, n_points, n_steps, 2))
     for k_idx, k in enumerate(ks):
+        if backwards:
+            # stable
+            text = " stable"
+            x0s = 0.5 * (-1 - np.sqrt(k + 4) / np.sqrt(k)) * p0s
+            # x0s = -0.5 * (1 + np.sqrt(k + 4) / np.sqrt(k)) * p0s
+        else:
+            # unstable mannifold
+            text = " unstable"
+            x0s = 0.5 * (-1 + np.sqrt(k + 4) / np.sqrt(k)) * p0s
         results[k_idx, :] = iterate_coordinates(x0s, p0s, n_steps, k, backwards)
     return results
+
 
 if __name__ == '__main__':
     import doctest
@@ -132,23 +143,24 @@ if __name__ == '__main__':
     # kicking force
     k_c = 0.971635406
     k_size = 4
-    ks = np.linspace(0.01, 2, k_size)
+    ks = np.linspace(0.7, 1, k_size)
     # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
-    ks = np.array([0.001, 0.3, k_c, 1])
+    # ks = np.array([0.001, 0.3, k_c, 1])
+    # ks = np.array([1])
     k_size = ks.size
 
     # Calculation of phase space
     results = iterate_k(ks, x0s, p0s, n_steps)
 
-    # Calculation of unstable mannifold at (0.0)
-    epsilon = 1e-6
-    delta_x = np.linspace(-epsilon / 2, epsilon / 2, 4)
-    delta_y = delta_x
+    # Calculation of stable and unstable mannifold at (0.0)
+    epsilon = 1e-12
+    n_epsilon = 1000
+    delta_y = np.linspace(0, epsilon, n_epsilon)
 
-    mannifold_steps = 80
-    mannifold_unstable = iterate_k(ks, delta_x, delta_y, mannifold_steps)
+    mannifold_steps = 40
+    mannifold_unstable = iterate_mannifold_k(ks, delta_y, mannifold_steps)
 
-    mannifold_stable = iterate_k(ks, delta_x, delta_y, mannifold_steps, backwards=True)
+    mannifold_stable = iterate_mannifold_k(ks, delta_y, mannifold_steps, backwards=True)
 
     # Plot
     # subplot matrix to show multiple results for different k
@@ -181,7 +193,8 @@ if __name__ == '__main__':
         current_axis.set_ylim(p_interval)
         current_axis.set_title("k = {:.2f}".format(k))
 
-    ks_string = "k = "+", ".join("{:.2f}".format(k) for k in ks)
-    fig1.savefig("./graphics/exercise7_Standard-Map - {}.png".format(ks_string), dpi=300, transparent=True, bbox_inches='tight')
+    ks_string = "k = " + ", ".join("{:.2f}".format(k) for k in ks)
+    fig1.savefig("./graphics/exercise7_Standard-Map - {}.png".format(ks_string), dpi=300, transparent=True,
+                 bbox_inches='tight')
 
     plt.show()
