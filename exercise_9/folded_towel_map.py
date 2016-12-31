@@ -84,7 +84,41 @@ def calculate_largest_le(n_steps=500):
     return le
 
 
-def calculcate_le_spectrum():
+def calculate_le_spectrum():
+    # calculate point on attractor
+    # transient_steps = 50
+    # x0 = [1, 1, 1]
+    # xn = iterate_map(transient_steps, x0)
+    # x0 = xn[-1]
+    x0 = [0.49098218, 0.05363883, 0.79275178]
+
+    # number of largest lyapunov exponents
+    k = 3
+    # orthogonal matrix - identity
+    o_k = np.identity(k)
+    # medium time step
+    T = 10
+    N = 1
+    n_steps = T * N
+    # reference orbit
+    xn = iterate_map(n_steps, x0)
+    # jacobians
+    jacobians = jacobian_vector(xn)
+    # qr decomposition
+    qs = np.zeros((n_steps, 3, 3))
+    rs = np.zeros((n_steps, 3, 3))
+    for idx, jacobian in enumerate(jacobians):
+        q, r = np.linalg.qr(jacobian)
+        # diagonal matrix
+        d = np.identity(3)
+        d = d.dot(np.array([
+            [np.sign(r[0, 0])],
+            [np.sign(r[1, 1])],
+            [np.sign(r[2, 2])]]))
+        qs[idx] = q.dot(d)
+        rs[idx] = r.dot(d)
+
+
     return None
 
 
@@ -110,4 +144,6 @@ def visualize_converging_largest_le(N=500):
 
 if __name__ == '__main__':
     # visualize_map()
-    visualize_converging_largest_le()
+    # visualize_converging_largest_le()
+    print(calculate_largest_le(100))
+    calculate_le_spectrum()
