@@ -67,6 +67,8 @@ def calculate_largest_le(n_steps=500):
     calculate the largest lyapunov exponent
     :return:
 
+    >>> calculate_largest_le(100)
+    0.44937438976581001
     """
     transient_steps = 100
     x0 = [1, 1, 1]
