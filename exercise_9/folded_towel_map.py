@@ -149,20 +149,36 @@ def visualize_map(n_steps=100000):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot(xn[transient_steps:, 0], xn[transient_steps:, 1], xn[transient_steps:, 2], '.', markersize=markersize)
-    plt.show()
 
 
 def visualize_converging_largest_le(N=500):
-    n_steps = np.linspace(1, 1000, N)
+    n_steps = np.linspace(1, 800, N)
     les = np.zeros(N)
     for idx, n_step in enumerate(n_steps):
         les[idx] = calculate_largest_le(int(n_step))
-    plt.plot(n_steps, les)
-    plt.show()
+    fig2, ax2 = plt.subplots()
+    ax2.plot(n_steps, les)
+    ax2.set_title("Largest Lyapunov exponent {:.2f}".format(les[-1]))
+
+
+def visualize_le_spectrum(Ns=np.arange(1, 500)):
+    result = np.zeros((Ns.size, 3))
+    for idx, N in enumerate(Ns):
+        spectrum = calculate_le_spectrum(N)
+        result[idx] = spectrum
+    fig3, ax3 = plt.subplots()
+    ax3.plot(Ns, result)
+    ax3.set_xlabel("N")
+    ax3.set_ylabel("lyapunov exponent")
+
+    spectrum_string = ", ".join("{:.2f}".format(le) for le in spectrum)
+    ax3.set_title("Lyapunov exponent spectrum = {}".format(spectrum_string))
 
 
 if __name__ == '__main__':
-    # visualize_map()
-    # visualize_converging_largest_le()
-    print(calculate_largest_le(100))
-    print(calculate_le_spectrum())
+    visualize_map()
+    visualize_converging_largest_le()
+    print("largest le: ", calculate_largest_le(100))
+    visualize_le_spectrum()
+    print("le spectrum: ", calculate_le_spectrum(100))
+    plt.show()
