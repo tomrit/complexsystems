@@ -92,7 +92,7 @@ def calculate_largest_le(n_steps=500):
     return le
 
 
-def calculate_le_spectrum():
+def calculate_le_spectrum(N=100, T=100):
     # calculate point on attractor
     # x0 = [1, 1, 1]
     # xn = iterate_map(transient_steps, x0)
@@ -103,13 +103,9 @@ def calculate_le_spectrum():
     k = 3
     # orthogonal matrix - identity
     o_k = np.identity(k)
-    # medium time step
-    T = 100
-    N = 100
-
+    # initialization
     x_n = x_0
     q = o_k
-    # qr decomposition
     qs = np.zeros((N, k, k))
     rs = np.zeros((N, k, k))
     for idx, n in enumerate(range(0, N)):
@@ -117,9 +113,11 @@ def calculate_le_spectrum():
         x_ns = iterate_map(T, x_n)
         # future starting point
         x_n = x_ns[-1]
-        # jacobians
+        # calculate jacobians
         jacobians = jacobian_vector(x_ns)
+        # multiply jacobians
         p = np.dot(multiply_jacobian_vector(jacobians), q)
+        # perform the qr decomposition
         q, r = np.linalg.qr(p)
         # diagonal matrix
         d = np.diag(np.array([
@@ -127,14 +125,18 @@ def calculate_le_spectrum():
             np.sign(r[1, 1]),
             np.sign(r[2, 2])]))
         q = q.dot(d)
+        # make diagonal elements positive
         r = r.dot(d)
         qs[idx] = q
         rs[idx] = r
 
+    # calculate the le specttrum
     le_spectrum = np.zeros(k)
     for r in rs:
+        # sum up diagonal elements
         diagonal = np.diag(r)
         le_spectrum += np.log(diagonal)
+    # normalization
     le_spectrum /= N * T
     return le_spectrum
 
