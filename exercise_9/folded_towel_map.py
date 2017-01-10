@@ -62,6 +62,13 @@ def jacobian_vector(xn):
     return result_vector
 
 
+def multiply_jacobian_vector(jacobian_vector):
+    yn = np.identity(jacobian_vector[0].shape[0])
+    for jacobian_matrix in jacobian_vector:
+        yn = yn.dot(jacobian_matrix)
+    return yn
+
+
 def calculate_largest_le(n_steps=500):
     """
     calculate the largest lyapunov exponent
@@ -77,9 +84,8 @@ def calculate_largest_le(n_steps=500):
     # temporal evolution of a small perturbation
     epsilon = 1e-3
     y0 = np.repeat(epsilon, 3)
-    yn = np.identity(3)
-    for jacobian_matrix in jacobian_vector(xn):
-        yn = yn.dot(jacobian_matrix)
+    jacobians = jacobian_vector(xn)
+    yn = multiply_jacobian_vector(jacobians)
     yn = yn.dot(y0)
     le = 1 / n_steps * np.log(np.linalg.norm(yn) / np.linalg.norm(y0))
 
