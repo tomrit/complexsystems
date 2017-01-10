@@ -158,10 +158,10 @@ def visualize_converging_largest_le(N=500):
         les[idx] = calculate_largest_le(int(n_step))
     fig2, ax2 = plt.subplots()
     ax2.plot(n_steps, les)
-    ax2.set_title("Largest Lyapunov exponent {:.2f}".format(les[-1]))
+    ax2.set_title("Largest Lyapunov exponent {:.3f}".format(les[-1]))
 
 
-def visualize_le_spectrum(Ns=np.arange(1, 500)):
+def visualize_le_spectrum(Ns=np.arange(1, 100)):
     result = np.zeros((Ns.size, 3))
     for idx, N in enumerate(Ns):
         spectrum = calculate_le_spectrum(N)
@@ -171,7 +171,7 @@ def visualize_le_spectrum(Ns=np.arange(1, 500)):
     ax3.set_xlabel("N")
     ax3.set_ylabel("lyapunov exponent")
 
-    spectrum_string = ", ".join("{:.2f}".format(le) for le in spectrum)
+    spectrum_string = ", ".join("{:.3f}".format(le) for le in spectrum)
     ax3.set_title("Lyapunov exponent spectrum = {}".format(spectrum_string))
 
 
@@ -180,5 +180,5 @@ if __name__ == '__main__':
     visualize_converging_largest_le()
     print("largest le: ", calculate_largest_le(100))
     visualize_le_spectrum()
-    print("le spectrum: ", calculate_le_spectrum(100))
+    print("le spectrum N=500: ", calculate_le_spectrum(500))
     plt.show()
