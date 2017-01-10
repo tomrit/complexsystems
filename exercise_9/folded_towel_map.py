@@ -94,40 +94,49 @@ def calculate_largest_le(n_steps=500):
 
 def calculate_le_spectrum():
     # calculate point on attractor
-    # transient_steps = 50
     # x0 = [1, 1, 1]
     # xn = iterate_map(transient_steps, x0)
     # x0 = xn[-1]
-    x0 = [0.49098218, 0.05363883, 0.79275178]
+    x_0 = [0.49098218, 0.05363883, 0.79275178]
 
     # number of largest lyapunov exponents
     k = 3
     # orthogonal matrix - identity
     o_k = np.identity(k)
     # medium time step
-    T = 10
-    N = 1
-    n_steps = T * N
-    # reference orbit
-    xn = iterate_map(n_steps, x0)
-    # jacobians
-    jacobians = jacobian_vector(xn)
+    T = 100
+    N = 100
+
+    x_n = x_0
+    q = o_k
     # qr decomposition
-    qs = np.zeros((n_steps, 3, 3))
-    rs = np.zeros((n_steps, 3, 3))
-    for idx, jacobian in enumerate(jacobians):
-        q, r = np.linalg.qr(jacobian)
+    qs = np.zeros((N, k, k))
+    rs = np.zeros((N, k, k))
+    for idx, n in enumerate(range(0, N)):
+        # next step: phi_n+1
+        x_ns = iterate_map(T, x_n)
+        # future starting point
+        x_n = x_ns[-1]
+        # jacobians
+        jacobians = jacobian_vector(x_ns)
+        p = np.dot(multiply_jacobian_vector(jacobians), q)
+        q, r = np.linalg.qr(p)
         # diagonal matrix
-        d = np.identity(3)
-        d = d.dot(np.array([
-            [np.sign(r[0, 0])],
-            [np.sign(r[1, 1])],
-            [np.sign(r[2, 2])]]))
-        qs[idx] = q.dot(d)
-        rs[idx] = r.dot(d)
+        d = np.diag(np.array([
+            np.sign(r[0, 0]),
+            np.sign(r[1, 1]),
+            np.sign(r[2, 2])]))
+        q = q.dot(d)
+        r = r.dot(d)
+        qs[idx] = q
+        rs[idx] = r
 
-
-    return None
+    le_spectrum = np.zeros(k)
+    for r in rs:
+        diagonal = np.diag(r)
+        le_spectrum += np.log(diagonal)
+    le_spectrum /= N * T
+    return le_spectrum
 
 
 def visualize_map(n_steps=100000):
@@ -154,4 +163,4 @@ if __name__ == '__main__':
     # visualize_map()
     # visualize_converging_largest_le()
     print(calculate_largest_le(100))
-    calculate_le_spectrum()
+    print(calculate_le_spectrum())
