@@ -52,18 +52,30 @@ def visualize_iterated_i(data_points):
     for idx, q in enumerate(qs):
         Is = iterate_data_size(data_points, q, epsilons, ns)
         ax2 = ax_array_flat[idx]
+        x = np.log10(1 / epsilons)
         for idx2, I in enumerate(Is):
             n = ns[idx2]
-            ax2.plot(np.log10(1 / epsilons), I, 'o-', label=str(n))
+            ax2.plot(x, I, 'o-', label=str(n))
+        # linear regression for largest n in interval [1,3]
+        interval = np.where(np.logical_and(x >= 1, x <= 3))
+        fit = np.polyfit(x[interval], I[interval], 1)
+        fit = fit.T[0]
+        fit_function = np.poly1d(fit)
+        linear_slope = fit_function(x)
+        # plot linear slope
+        ax2.plot(x, linear_slope, '--k')
         ax2.legend(loc='best')
+        # labels
         ax2.set_xlabel('$log(1/\epsilon)$')
         ax2.set_ylabel('$I(\epsilon)$')
-        ax2.set_title('$q = {}$'.format(q))
+        ax2.set_title('$q = {:d}; I = {:.1f} \cdot \log(1/\epsilon) +  {:.1f}$'.format(q, fit[0], fit[1]))
 
-    ns_string = "n = " + ", ".join("{}".format(n) for n in ns)
-    qs_string = "q = " + ", ".join("{}".format(q) for q in qs)
-    fig2.savefig('./graphics/information_dimension {} {}.png'.format(ns_string, qs_string), dpi=300, transparent=True,
+    # save image
+    ns_string = "n = " + ", ".join("{:d}".format(n) for n in ns)
+    qs_string = "q = " + ", ".join("{:d}".format(q) for q in qs)
+    fig2.savefig("./graphics/information_dimension {} {}.png".format(ns_string, qs_string), dpi=300, transparent=True,
                  bbox_inches='tight')
+
 
 if __name__ == '__main__':
     data_points = np.loadtxt("data1.txt")
