@@ -43,7 +43,7 @@ def visualize_data(data_points):
 
 
 def visualize_iterated_i(data_points):
-    epsilons = np.logspace(-3.5, 0, 40)
+    epsilons = np.logspace(-3.5, 0, 20)
     ns = np.linspace(1e4, 1e5, 7).astype(int)
     qs = np.array([0, 1, 2])
 
