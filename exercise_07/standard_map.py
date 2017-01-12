@@ -143,8 +143,8 @@ if __name__ == '__main__':
 
     # kicking force
     k_c = 0.971635406
-    k_size = 4
-    ks = np.linspace(0.7, 1, k_size)
+    k_size = 9
+    ks = np.linspace(0.7, 1.7, k_size)
     # ks = np.array([0.01, 0.02, 0.5, 0.9, 0.99, 1, 2, 3, 4.5])
     # ks = np.array([0.001, 0.3, k_c, 1])
     # ks = np.array([1])
