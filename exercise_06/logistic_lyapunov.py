@@ -1,12 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
-from mpl_toolkits.mplot3d import axes3d
-import time as time
 import sys
-import copy
-from matplotlib.backends.backend_pdf import PdfPages
-from tools import get_a4_width
+import time as time
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 x0 = 0.5
 iterates = 10000
