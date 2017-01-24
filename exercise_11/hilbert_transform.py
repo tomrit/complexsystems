@@ -15,7 +15,7 @@ def ex_1d():
     omega = 1.5
 
     s = a * np.sin(omega * t) + b * np.cos(2 * omega * t)
-    s_hilbert = hilbert(s)
+    s_analytic = hilbert(s)
 
     sp = np.fft.fft(s) / t_max / N
     freq = np.fft.fftfreq(t.shape[-1], d=time_step) * 2 * np.pi
@@ -32,9 +32,12 @@ def ex_1d():
     ax2.set_xlabel("$\omega $")
 
     ax3.set_title("Hilbert transform")
-    ax3.plot(t_rad, s_hilbert.real, t_rad, s_hilbert.imag)
+    ax3.plot(t_rad, s_analytic.real, t_rad, s_analytic.imag)
     ax3.set_ylim([-3, 3])
     ax3.set_xlabel("$t/2\pi$")
+
+    fig2, ax = plt.subplots()
+    ax.plot(s_analytic.real, s_analytic.imag, ',')
 
 
 if __name__ == '__main__':
