@@ -38,7 +38,8 @@ def ex_1d():
 
     fig2, ax = plt.subplots()
     ax.plot(s_analytic.real, s_analytic.imag, ',')
-
+    ax.set_xlabel("$\Re$")
+    ax.set_ylabel("$\Im$")
 
 if __name__ == '__main__':
     ex_1d()
