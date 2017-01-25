@@ -132,9 +132,10 @@ def visualize_attractor(rt):
 
 
 def visualize_delay_coordinates(rt):
-    x = rt[100:, 0]
+    x = rt[100:, 2]
 
     shifts = np.arange(0, 400, 20)
+    shifts = np.arange(0, 40, 2)
     N = shifts.size
 
     rows, columns = get_subplots_squared(N)
@@ -153,29 +154,32 @@ def visualize_delay_coordinates(rt):
 def visualize_reconstruction(rt):
     # shift = 10
     x = rt[100:, 0]
-    shift = 81
-    r_delayed_x = delay_coordinates(x, shift, d=3)
+    shift_x = 81
+    r_delayed_x = delay_coordinates(x, shift_x, d=3)
 
     y = rt[100:, 1]
-    shift = 82
-    r_delayed_y = delay_coordinates(y, shift, d=3)
+    shift_y = 82
+    r_delayed_y = delay_coordinates(y, shift_y, d=3)
 
     z = rt[100:, 2]
-    shift = 100
-    r_delayed_z = delay_coordinates(z, shift, d=3)
+    shift_z = 18
+    r_delayed_z = delay_coordinates(z, shift_z, d=3)
 
     markersize = 0.2
     fig4 = plt.figure()
     ax4 = fig4.gca(projection='3d')
     ax4.plot(r_delayed_x[:, 0], r_delayed_x[:, 1], r_delayed_x[:, 2], '.', markersize=markersize)
+    ax4.set_title('reconstruction from x; shift: {}'.format(shift_x))
 
     fig5 = plt.figure()
     ax5 = fig5.gca(projection='3d')
     ax5.plot(r_delayed_y[:, 0], r_delayed_y[:, 1], r_delayed_y[:, 2], '.', markersize=markersize)
+    ax5.set_title('reconstruction from y; shift: {}'.format(shift_y))
 
-    fig4 = plt.figure()
-    ax4 = fig4.gca(projection='3d')
-    ax4.plot(r_delayed_z[:, 0], r_delayed_z[:, 1], r_delayed_z[:, 2], '.', markersize=markersize)
+    fig6 = plt.figure()
+    ax6 = fig6.gca(projection='3d')
+    ax6.plot(r_delayed_z[:, 0], r_delayed_z[:, 1], r_delayed_z[:, 2], '.', markersize=markersize)
+    ax6.set_title('reconstruction from z; shift: {}'.format(shift_z))
 
 
 if __name__ == '__main__':
