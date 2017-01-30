@@ -1,0 +1,192 @@
+\documentclass[11pt,headinclude,bibliography=totocnumbered,english,parskip=half-]{scrartcl}
+
+% Einstellungen für Schrift und Sprache
+\usepackage{babel}      % Sprachpaket
+\usepackage[utf8]{inputenc}      % Zeichenkodierung UTF8
+\usepackage{microtype}           % Paket für mikrotypographische Verbesserungen
+\usepackage[T1]{fontenc}         % Schriftartpaket
+\usepackage{lmodern}             % Schriftartpaket
+\usepackage{textcomp}            % Paket für Textsymbole
+\usepackage[font=footnotesize]{caption}
+\usepackage{longtable}
+
+%%%%%%%%%%%TITEL ERGÄNZEN%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\titleofprotocol}{Exercise Set 2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Allgemeine Layout-Einstellungen
+\usepackage{geometry}            % Benutzerdefiniertes Einstellen der Seitenränder
+\geometry{left=22mm,right=22mm,top=28mm,bottom=33mm}
+\setkomafont{captionlabel}{\sffamily\bfseries}
+\setcapwidth[c]{.9\textwidth}
+
+% Einstellungen für Kopf- und Fußzeilen
+\renewcommand{\sectionmark}[1]{\markboth{\thesection{}. #1}{}}
+\renewcommand{\subsectionmark}[1]{\markright{\thesubsection{}. #1}}
+\usepackage[headsepline,plainfootsepline]{scrpage2}
+\ihead[]{Thomas Rittmann}
+\chead[]{Intro to Complex Systems}
+\ohead[]{\today}
+\cfoot[\pagemark]{-\,\pagemark\,-}
+\pagestyle{scrheadings}
+\setkomafont{pageheadfoot}{\normalfont}
+
+% Einstellungen für die Matheumgebung
+\usepackage{amssymb}             % Mathe-Paket
+\usepackage{amsmath}             % Mathe-Paket
+\usepackage{exscale}             % Paket zur Skalierung
+
+% Weitere Pakete
+\usepackage{color}               % Farb-Paket
+\usepackage{enumitem}            % Listen-Paket
+\usepackage{graphicx}            % Paket zur Graphik-Ausgabe
+\usepackage[hyphens]{url}        % Paket für URLs
+\usepackage{multirow}            % Paket zum vertikalen Verbinden von Zellen
+\usepackage{rotating}            % Paket zum Drehen von Tabellen 
+\usepackage{fixltx2e}            % Repariert einige Dinge bzgl. Float-Umgebungen
+\usepackage{verbatim}		  % zum Auskommentieren
+
+
+% Paket für Einheiten
+\usepackage{siunitx}
+\sisetup{
+  load-configurations = abbreviations, 
+  per-mode = symbol,            % Darstellung von Brüchen mit /
+  output-decimal-marker = {,},  % Dezimal-Trennungs-Zeichen
+  separate-uncertainty,         % Fehler separat angeben
+  list-final-separator = { und },
+  list-pair-separator = { und },% Abschlusswort für Listen
+  range-phrase = { bis }        % Trennwort für Zahlbereiche
+}
+
+% Pakete für Graphik-Positionierung
+\usepackage{wrapfig}             % Paket zum Umfließen des Textes um Graphiken
+\usepackage{subfigure}           % Paket für mehrere Abbildungen nebeneinander
+\usepackage{ragged2e}            % Paket zur Absatzausrichtung (für sidecap benötigt)
+\usepackage{float}               % Paket für zusätzliche Option zur Grafikpositionierung
+\usepackage{floatflt}
+% Paket für Verweise
+\usepackage[hidelinks]{hyperref}
+
+% Benutzerdefinierte Befehle
+
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\renewcommand{\d}{\text{d}}
+\newcommand{\f}{\frac}
+\renewcommand{\k}{\text{,}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%DOKUMENTBEGINN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+
+\setcounter{section}{1}
+\begin{section}*{Exercise Set 2}
+
+\begin{subsection}{Lotka-Volterra model}
+
+If the prey's reproductive term is substituted by a more realistic logistic term, the populations of prey $x(t)$ and predators $y(t)$ are described by the differential equations
+\begin{align*}
+  \f{\d}{\d t}\,x\,&=\, \alpha (1-x) x - c\,x\,y \; = \; -\alpha x^2 + \alpha x - c\,x\,y\\
+  \f{\d}{\d t}\,y\,&=\, -b\,y + d\,x\,y \;=\;y(d x -b)
+\end{align*}
+wherein $\alpha,b,c,d \,\in \rm I\!R^+$. \\\\
+The first and trivial fix point is - as in the normal model - found to be the origin:
+$$
+\vec{x}^*_1=
+\begin{pmatrix}
+x^*_1\\
+y^*_1
+\end{pmatrix}=
+\begin{pmatrix}
+0\\
+0
+\end{pmatrix}
+$$
+
+The second fix point is obtained by solving the bracket in $\dot{y}\stackrel{!}{=}0$ for $x^*$ and plugging into $\dot{x}$:
+$$
+\vec{x}^*_2=
+\begin{pmatrix}
+\f{b}{d} \\
+\f{\alpha}{c}\,(1- \f{b}{d})
+\end{pmatrix}
+$$
+It is apparent, that the fix point can just exist in the physically senseful regime of positive populations $x,y \geq 0$, so only if $b/d < 1 \Leftrightarrow b < d$ in order to get a positive $y^*_2$ . This also makes sense considering that $x(t)=N/K$ should be lower equal 1 in a logisitcal model with finite capacity $K$.\\
+For stability analysis, we study a linearized system around the fix points
+$$
+\vec{x}(t) = \vec{x}^* + \vec{u}(t) \qquad  \Rightarrow  \qquad \dot{\vec{u}} \approx \text{\textbf{A}}  \cdot \vec{u} \quad \text{with} \quad \text{\textbf{A}}= 
+\begin{pmatrix}
+ \frac{\delta \dot{x}}{\delta x}& \frac{\delta \dot{x}}{\delta y}\\
+ \frac{\delta \dot{y}}{\delta x}& \frac{\delta \dot{y}}{\delta y}
+\end{pmatrix}
+_{\!\!\vec{x}=\vec{x}^*}.
+$$\\
+In this model we get
+$$
+\text{\textbf{A}}= 
+\begin{pmatrix}
+ -2\alpha\, x^* + \alpha - c\, y^* & - c \,x^*\\
+ d \, y^* & -b+d\,x^*
+\end{pmatrix}.
+$$\\
+For the first fix point $\vec{x_1}^*=(0,0)$, the matrix becomes
+$$
+\text{\textbf{A}}_1= 
+\begin{pmatrix}
+ \alpha & 0\\
+ 0 & -b
+\end{pmatrix}
+\qquad
+\Rightarrow \qquad
+\lambda_1 = \alpha, \;\; \lambda_2 =-b,
+$$\\
+which corresponds to a \textbf{saddle} with a stable manifold along the y-axis and an unstable manifold along the x-axis.\\\\
+For the second fix point, we get
+$$
+\text{\textbf{A}}_2= 
+\begin{pmatrix}
+-2 \alpha \, \frac{b}{d} + \alpha - \alpha\left(1-\frac{b}{d}\right) & - c\, \frac{b}{d}\\
+ \frac{d \alpha}{c} \left(1-\frac{b}{d}\right) & 0
+\end{pmatrix} \, = \,
+\begin{pmatrix}
+ - \alpha \, \frac{b}{d} & -c \, \frac{b}{d}\\
+ \frac{\alpha}{c}\left(d-b\right) & 0
+\end{pmatrix}
+$$
+Without explicitly calculating the eigenvalues the stability can directly be evaluated by a look on the trace and determinant of the matrix (see \url{Strogatz} p.138):
+
+$$\tau=\text{trace}(\text{\textbf{A}}) = \frac{-\alpha\,b}{d} \qquad  \Delta=\text{det}(\text{\textbf{A}})= \frac{\alpha\,b}{d}\left(d-b\right). $$
+Since $\tau < 0$ and $\Delta>0$ for $d>b$ (as required for the fix point anyway), the fix point is found to be \textbf{stable}. The borderline between a node (i.e. two negative real eigenvalues) and a spiral (i.e. two complex (conjugate) eigenvalues) is described by $\tau^2- 4\Delta=0$. Plugging in $\tau$ and $\Delta$ yields the following parameter conditions for the different kinds of fix points. 
+\begin{align*}
+ \text{stable node} & \;\;\text{for} \;\alpha > \alpha_0& \\
+             \text{degenate node} & \;\;\text{for} \;\alpha = \alpha_0 &\quad \text{with} \;\; \alpha_0=4 \frac{d}{b}(d-b)\\
+             \text{stable spiral} & \;\;\text{for} \;\alpha < \alpha_0&
+\end{align*}
+These results are (maybe a bit more intuitively) reflected by a look on the eigenvalues:
+$$
+\lambda_{1,2}=\frac{1}{2}\left(\tau\pm \sqrt{\tau^2-4\Delta}\right) \;=\; - \frac{\alpha\,b}{2d}\pm\frac{\alpha\,b}{2d}\,\sqrt{1-\frac{4}{\alpha}\cdot\frac{d}{b}\left(d-b\right)}
+$$
+
+
+
+%  \begin{itemize}
+%   \item Zunächst einmal fällt auf, dass die Beiträge der ersten Beugungsordnung bei Reflexion und Transmission sowohl bei Wolfram als auch bei Gold für Wellenlängen größer als der Gitterkonstanten ($g=900$\,nm) verschwinden. Dies war zu erwarten, da der theoretisch zu berechnende Winkel dieser Maxima für $\lambda = g$ genau 90 \textdegree\, beträgt und danach undefiniert ist.
+%   $$
+%   \varphi_n=\arcsin\left(n\cdot \frac{\lambda}{g}\right)
+%   $$
+%   \item Bei beiden Materialien und Stegbreiten fällt bei Wellenlängen größer als der Gitterkonstanten auch die Gesamttransmission zugunsten von Absorption und hauptsächlich Reflektion ab.
+%   \item Für z-polarisiertes Licht ergibt sich eine sehr geringe bzw. gar keine Transmission, die Intensität wird vollständig reflektiert oder absorbiert. Bei Wolfram wird nur ca. 46 \% reflektiert und der Rest absorbiert, bei Gold beträgt der Reflektionsanteil ca. 96\%. Die dadurch erkennbare Polarisationsabhängigkeit entspricht den Beschreibungen von \textsc{Wolff}.
+%   \item Auch bei der Betrachtung von x-polarisiertem Licht fällt auf, dass bei Wolfram circa. die Hälfte der Intensität komplett absorbiert wird. Grund: ?
+%   \item Bei Gold ist ein Minimumspeak der Reflexion und ein entsprechendes Maximum der Transmission etwas oberhalb der Gitterkonstanten bei einer Wellenlänge von ca. 980 nm zu erkennen. Der Anstieg der Transmission beginnt bei ca. 940 nm, der Abfall geht bei ca. 1080 nm asymptotisch gegen eine Konstante. Dabei ist zu erkennen, dass der Peak ein asymmetrischines Aussehen hat, das heißt die Transmission verbleibt nach dem Peak etwas höher bei etwa 10 \%. 
+%   \item Bei Wolfram ist eine ähnlich erhöhte Intensität bei größeren Wellenlängen zu erkennen, allerdings sind keine Peaks anzutreffen. Dies deutet darauf hin, dass die Feldverstärkung bei Gold tatsächlich auf Plasmomenkopplung zurückzuführen ist, da nur bei Gold aufgrund von $n<\kappa$, also einer negativen Permittivität, überhaupt Plasmomen auftreten können.
+%   \item Für einen schmaleren Spalt / kleineren Lochdurchmesser fallen zwei Unterschiede auf: Zum einen sinkt die transmittierte Intensität um etwas mehr als die Hälfte, zum anderen werden die Peaks schmaler. Dies ist konsistent mit den Beobachtungen von \textsc{Wolff}, der einen linearen Abfall mit der Lochfläche sowie eine starke Abhängigkeit der Peakbreite vom Lochdurchmesser ermittelt hat. Letzteres entspricht den bekannten Beobachtungen beim gewöhnlichen Einzelspalt, wo mit abnehmenden Durchmesser die Breite des Frequenzsspektrums ebenfalls abnimmt.
+%  \end{itemize}
+\end{subsection}
+
+\end{section}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%LITERATURVERZEICHNIS%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%DOKUMENTENDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document} 
