@@ -30,10 +30,10 @@ from tools import Dgl
 t_max = 1.5
 t_discard = 0.8
 
-N = 256
+N = 32
 rmin = 19e3
 rmax = 22e3
-tolerance = 1e-8
+tolerance = 1e-6
 
 markersize = 1
 r0 = [0, 0.5, 0.75e-3]
@@ -135,7 +135,7 @@ def main():
 
     pool = mp.Pool(processes=cores)
 
-    res = pool.map(main_eval, (1, 2, 3, 4))
+    res = pool.map(main_eval, (1,2))
     print("Generating plots and output files...")
     # print(res[1][1][0])
     datafile_path = outputname + ".txt"
