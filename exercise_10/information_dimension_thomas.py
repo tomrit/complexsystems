@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#############################################################################################################
+#       Introduction to Complex Systems  --  Exercise-Sheet 10  --  Generalized Dimension.                  #
+#       Thomas Rittmann, Jan 2017                                                                           #
+#                                                                                                           #
+#       This program analyzes the generalized dimension of a given 2D data set by computing the Renyi       #
+#       Information. The dimension is then calculated by a linear fit on the Renyi information depending    #
+#       on the block size, which the data is put in. This is done for q=0,1,2                               #
+#                                                                                                           #
+#############################################################################################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize
